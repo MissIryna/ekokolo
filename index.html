@@ -104,7 +104,7 @@ button{font:inherit;color:inherit;cursor:pointer}
 .stick{position:absolute;top:-12px;right:12px;font-size:34px;line-height:1;filter:drop-shadow(0 2px 3px rgba(0,0,0,.2))}
 
 /* ---------- panels ---------- */
-.tools{display:flex;gap:10px;flex-wrap:wrap;margin-top:30px}
+.tools{display:flex;gap:10px;flex-wrap:wrap;margin-top:24px}
 .tools button{
   background:var(--card);border:2px solid var(--line);border-radius:14px;
   padding:11px 16px;font-weight:700;font-size:14.5px;
@@ -113,6 +113,9 @@ button{font:inherit;color:inherit;cursor:pointer}
 .panel{margin-top:14px;background:var(--card);border:2px solid var(--line);border-radius:20px;padding:18px}
 .panel h3{font-size:18px;margin-bottom:4px}
 .panel .hint{color:var(--muted);font-size:14px;margin:6px 0 14px}
+.rules{margin:4px 0 14px;padding-left:22px}
+.rules li{margin:7px 0;font-size:14.5px}
+.panel .mini{color:var(--muted);font-size:14px;margin:9px 0 0}
 .album{display:grid;grid-template-columns:repeat(auto-fill,minmax(52px,1fr));gap:8px}
 .slot{aspect-ratio:1;display:grid;place-items:center;font-size:25px;border-radius:14px;border:2px dashed var(--line)}
 .slot.got{border-style:solid;border-color:var(--accent);background:color-mix(in srgb,var(--accent) 10%,transparent)}
@@ -178,12 +181,25 @@ button{font:inherit;color:inherit;cursor:pointer}
     </div>
   </section>
 
-  <div class="grid" id="grid"></div>
-
   <div class="tools">
+    <button id="tRules" aria-expanded="false">Як грати</button>
     <button id="tAlbum" aria-expanded="false">Мої наліпки</button>
     <button id="tBoard" aria-expanded="false">Табло роїв</button>
   </div>
+  <section class="panel" id="pRules" hidden>
+    <h3>Як грати</h3>
+    <ol class="rules">
+      <li>Виберіть на колі пору року — зараз саме та, що надворі.</li>
+      <li>Знайди справу, яку можеш зробити вже сьогодні.</li>
+      <li>Зроби її по-справжньому.</li>
+      <li>Натисни «Зроблено!» і зітри поле пальцем. Під ним наліпка й факт, якого ти ще не знав.</li>
+    </ol>
+    <p class="mini">Листочки показують, яка справа велика. Один листочок — упораєшся сам за кілька хвилин. Три — треба цілий рій або хтось дорослий поруч.</p>
+    <p class="mini">Справи поділені на два блоки. «Можу сам» роби, коли захочеш. «Роєм або з дорослими» плануйте разом на сходинах.</p>
+    <p class="mini">Порядок будь-який, і зробити все одразу неможливо — гра розрахована на цілий рік. Твої наліпки збираються в «Моїх наліпках», а поступ усього роя видно в «Таблі роїв».</p>
+    <p class="mini"><b>Одне важливе.</b> Наліпка без справи — обман самого себе. Пластун так не робить.</p>
+    <p class="mini">Виховникам: гра закриває більшість пунктів підрозділу «довкілля» новацьких проб, а також А.4 про добрі справи. Ройові справи варто розписати на рік наперед, ще на початку осені.</p>
+  </section>
   <section class="panel" id="pAlbum" hidden>
     <h3 id="albumTitle">Мої наліпки</h3>
     <p class="hint" id="albumHint"></p>
@@ -194,6 +210,8 @@ button{font:inherit;color:inherit;cursor:pointer}
     <p class="hint" id="boardHint">Тут видно, як просувається все гніздо.</p>
     <div class="rank" id="board"></div>
   </section>
+
+  <div class="grid" id="grid"></div>
 
   <footer class="credit">
     <svg class="emblem" viewBox="0 0 473.83 699.49" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Відзнака 101 куреня УСП «Карпатські Вовки»">
@@ -243,7 +261,7 @@ button{font:inherit;color:inherit;cursor:pointer}
 </svg>
     <div class="txt">
       <p class="cr1">101 курінь УСП «Карпатські Вовки»</p>
-      <p id="authors">Автори: <!-- впиши тут прізвища --></p>
+      <p id="authors">Автори: пл. сен. Іра Комендант, КВ</p>
       <p>Гра для новацтва. Готуйсь!</p>
     </div>
   </footer>
@@ -550,6 +568,7 @@ function toggle(btn,pan){
     if(open)pan.scrollIntoView({behavior:"smooth",block:"nearest"});
   };
 }
+toggle(document.getElementById("tRules"),document.getElementById("pRules"));
 toggle(document.getElementById("tAlbum"),document.getElementById("pAlbum"));
 toggle(document.getElementById("tBoard"),document.getElementById("pBoard"));
 
@@ -683,6 +702,7 @@ const m=new Date().getMonth();
 cur = m>=8&&m<=10 ? "autumn" : (m===11||m<=1) ? "winter" : m<=4 ? "spring" : "summer";
 document.body.dataset.season=cur;
 render();
+if(!total()){ document.getElementById("pRules").hidden=false; document.getElementById("tRules").setAttribute("aria-expanded","true"); }
 if(!st.grp||!st.nick) openGate(); else offline("Твій поступ збережено на цьому пристрої.");
 boot();
 </script>
