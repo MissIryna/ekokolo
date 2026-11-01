@@ -1,0 +1,6 @@
+.env
+.bundle/
+vendor/bundle/
+tmp/
+*.log
+.DS_Store
