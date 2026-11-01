@@ -1,0 +1,62 @@
+# Puma для Коло добрих екосправ (ekokolo.pp.ua)
+#
+# Живе на тому ж дроплеті, що й Menuger, і зроблений за зразком його
+# puma-production.service: той самий користувач, rbenv exec, unix-сокет.
+#
+# ВСТАНОВЛЕННЯ:
+#     sudo cp deploy/ekokolo.service /etc/systemd/system/
+#     sudo systemctl daemon-reload
+#     sudo systemctl enable --now ekokolo
+#
+# ПОВСЯКДЕННЕ КОРИСТУВАННЯ:
+#     sudo systemctl status  ekokolo
+#     sudo systemctl reload  ekokolo   ← після git pull (SIGUSR2)
+#     journalctl -u ekokolo -n 50
+
+[Unit]
+Description=Puma HTTP Server (Коло добрих екосправ)
+After=network-online.target postgresql.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=deploy
+Group=deploy
+WorkingDirectory=/home/deploy/ekokolo
+
+# DATABASE_URL, DB_POOL, ALLOWED_ORIGINS — у .env поруч із кодом.
+# Файл у .gitignore і nginx його не віддає (див. deploy/ekokolo.conf).
+EnvironmentFile=/home/deploy/ekokolo/.env
+Environment=RACK_ENV=production
+Environment=HOME=/home/deploy
+Environment=PATH=/home/deploy/.rbenv/shims:/home/deploy/.rbenv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+
+# Сокет лежить у tmp/, а tmp/ у .gitignore — на свіжому клоні його немає.
+ExecStartPre=/usr/bin/mkdir -p /home/deploy/ekokolo/tmp
+
+# Абсолютний шлях до rbenv з тієї ж причини, що й у Menuger: голий
+# `bundle` у неінтерактивному оточенні на цьому боксі вже раз резолвився
+# в чужий Ruby. Версію rbenv бере з .ruby-version у WorkingDirectory.
+#
+# Single mode, до трьох потоків: навантаження мізерне, а ядро одне й
+# ділиться з Menuger. DB_POOL у .env має бути не менший за кількість потоків.
+ExecStart=/home/deploy/.rbenv/bin/rbenv exec bundle exec puma \
+    --environment production \
+    --bind unix:///home/deploy/ekokolo/tmp/puma.sock \
+    --threads 1:3
+
+# SIGUSR2, а не USR1: фазовий рестарт (USR1) є лише в cluster mode.
+# USR2 перезапускає Puma на місці з тим самим PID.
+ExecReload=/bin/kill -USR2 $MAINPID
+
+Restart=on-failure
+RestartSec=5
+TimeoutStartSec=30
+TimeoutStopSec=15
+
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=ekokolo
+
+[Install]
+WantedBy=multi-user.target
