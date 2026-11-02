@@ -192,7 +192,7 @@ button{font:inherit;color:inherit;cursor:pointer}
   <div class="tools">
     <button id="tRules" aria-expanded="false">Як грати</button>
     <button id="tAlbum" aria-expanded="false">Мої наліпки</button>
-    <button id="tBoard" aria-expanded="false">Табло роїв</button>
+    <button id="tBoard" aria-expanded="false">Табло Роїв</button>
   </div>
   <section class="panel" id="pRules" hidden>
     <h3>Як грати</h3>
@@ -202,9 +202,9 @@ button{font:inherit;color:inherit;cursor:pointer}
       <li>Зроби її по-справжньому.</li>
       <li>Натисни «Зроблено!» і зітри поле пальцем. Під ним наліпка й факт, якого ти ще не знав.</li>
     </ol>
-    <p class="mini">Листочки показують, яка справа велика. Один листочок — упораєшся сам за кілька хвилин. Три — треба цілий рій або хтось дорослий поруч.</p>
+    <p class="mini">Листочки показують, яка справа велика. Один листочок — упораєшся сам за кілька хвилин. Три — треба цілий Рій або хтось дорослий поруч.</p>
     <p class="mini">Справи поділені на два блоки. «Можу сам» роби, коли захочеш. «Роєм або з дорослими» плануйте разом на сходинах.</p>
-    <p class="mini">Порядок будь-який, і зробити все одразу неможливо — гра розрахована на цілий рік. Твої наліпки збираються в «Моїх наліпках», а поступ усього роя видно в «Таблі роїв».</p>
+    <p class="mini">Порядок будь-який, і зробити все одразу неможливо — гра розрахована на цілий рік. Твої наліпки збираються в «Моїх наліпках», а поступ усього Рою видно в «Таблі Роїв».</p>
     <p class="mini"><b>Одне важливе.</b> Наліпка без справи — обман самого себе. Пластун так не робить.</p>
     <p class="mini">Виховникам: гра закриває більшість пунктів підрозділу «довкілля» новацьких проб, а також А.4 про добрі справи. Ройові справи варто розписати на рік наперед, ще на початку осені.</p>
   </section>
@@ -214,7 +214,7 @@ button{font:inherit;color:inherit;cursor:pointer}
     <div class="album" id="album"></div>
   </section>
   <section class="panel" id="pBoard" hidden>
-    <h3>Табло роїв</h3>
+    <h3>Табло Роїв</h3>
     <p class="hint" id="boardHint">Тут видно, як просувається все гніздо.</p>
     <div class="rank" id="board"></div>
   </section>
@@ -280,30 +280,30 @@ button{font:inherit;color:inherit;cursor:pointer}
     <h3 id="gTitle">Вітаємо в Колі</h3>
 
     <div id="gJoin">
-      <p class="sub">Виховник дасть тобі код роя. Впиши його разом зі своїм прізвиськом.</p>
+      <p class="sub">Виховник дасть тобі код Рою. Впиши його разом зі своїм прізвиськом.</p>
       <div class="gfields">
-        <input id="gCode" placeholder="Код роя" maxlength="8" autocomplete="off" autocapitalize="characters" spellcheck="false">
+        <input id="gCode" placeholder="Код Рою" maxlength="8" autocomplete="off" autocapitalize="characters" spellcheck="false">
         <input id="gNick" placeholder="Твоє прізвисько" maxlength="24" autocomplete="off">
       </div>
       <div class="row2"><button id="gJoinGo" class="prim">Приєднатися</button></div>
-      <p class="mini"><button class="linky" id="gToNew">Я виховник — створити рій</button></p>
+      <p class="mini"><button class="linky" id="gToNew">Я виховник — створити Рій</button></p>
     </div>
 
     <div id="gNew" hidden>
-      <p class="sub">Створи рій — гра видасть код, який роздаси новакам на сходинах.</p>
+      <p class="sub">Створи Рій — гра видасть код, який роздаси новакам на сходинах.</p>
       <div class="gfields">
-        <input id="gName" placeholder="Назва роя" maxlength="24" autocomplete="off">
+        <input id="gName" placeholder="Назва Рою" maxlength="24" autocomplete="off">
         <input id="gVNick" placeholder="Твоє прізвисько" maxlength="24" autocomplete="off">
-        <label class="gcheck"><input type="checkbox" id="gTest"> тестовий рій, не показувати в таблі</label>
+        <label class="gcheck"><input type="checkbox" id="gTest"> тестовий Рій, не показувати в таблі</label>
       </div>
-      <div class="row2"><button id="gNewGo" class="prim">Створити рій</button></div>
+      <div class="row2"><button id="gNewGo" class="prim">Створити Рій</button></div>
       <p class="mini"><button class="linky" id="gToJoin">← Я новак, у мене є код</button></p>
     </div>
 
     <div id="gDone" hidden>
       <p class="sub">Рій створено. Ось код для новаків:</p>
       <p class="gcode" id="gCodeOut">—</p>
-      <p class="mini">Запиши його. Побачити знову можна буде в «Таблі роїв».</p>
+      <p class="mini">Запиши його. Побачити знову можна буде в «Таблі Роїв».</p>
       <div class="row2"><button id="gDoneGo" class="prim">Починаємо</button></div>
     </div>
 
@@ -364,7 +364,7 @@ const D=[
 {s:"winter",c:"Речі",lv:2,e:"🧵",tg:1,t:"Мішечок для хліба",d:"Пошийте з дорослими торбинку з тканини замість пакета.",f:"У тканинному мішечку хліб довше не черствіє."},
 {s:"winter",c:"Живе",lv:2,e:"🐦‍⬛",t:"Хто зимує поруч",d:"Знайди й упізнай трьох птахів, які зимують у твоєму місті.",f:"Синиці, повзики й дятли нікуди не відлітають — вони зимують із нами."},
 
-{s:"winter",c:"Живе",lv:2,e:"🐕‍🦺",tg:1,t:"Чужий пес",d:"Дізнайся, як поводитися, коли зустрів незнайомого собаку, і покажи це роєві.",f:"Собака кидається найчастіше тоді, коли злякався. Не тікай і не дивись йому просто в очі."},
+{s:"winter",c:"Живе",lv:2,e:"🐕‍🦺",tg:1,t:"Чужий пес",d:"Дізнайся, як поводитися, коли зустрів незнайомого собаку, і покажи це Роєві.",f:"Собака кидається найчастіше тоді, коли злякався. Не тікай і не дивись йому просто в очі."},
 
 {s:"spring",c:"Живе",lv:3,e:"🌳",tg:1,t:"Посади дерево",d:"Разом із дорослими посади дерево й домовся, хто його поливатиме.",f:"Дерево найкраще приживається, поки на ньому ще немає листя."},
 {s:"spring",c:"Живе",lv:1,e:"🌱",t:"Город на підвіконні",d:"Посій зелень у горщику й доглядай її три тижні.",f:"Рослині на підвіконні світло потрібне навіть більше за воду."},
@@ -376,7 +376,7 @@ const D=[
 {s:"spring",c:"Живе",lv:3,e:"🐝",tg:1,t:"Готель для комах",d:"Зроби з паличок і трубочок домівку для диких бджіл.",f:"Дикі бджоли запилюють рослини краще за домашніх."},
 {s:"spring",c:"Сміття",lv:2,e:"♻️",t:"Тиждень сортування",d:"Цілий тиждень сортуй сміття вдома сам, без підказок.",f:"Відсортоване сміття — це вже не сміття, а сировина."},
 {s:"spring",c:"Речі",lv:2,e:"🧰",t:"Полагодь, не викидай",d:"Пришийте ґудзик, підклейте книжку, полагодьте іграшку.",f:"Найекологічніша річ — та, яку ти не купив."},
-{s:"spring",c:"Люди",lv:3,e:"📖",tg:1,t:"Гутірка про свій вид",d:"Обери тварину з Червоної книги України й розкажи про неї своєму роєві.",f:"У Червоній книзі України — понад дві тисячі видів рослин і тварин."},
+{s:"spring",c:"Люди",lv:3,e:"📖",tg:1,t:"Гутірка про свій вид",d:"Обери тварину з Червоної книги України й розкажи про неї своєму Роєві.",f:"У Червоній книзі України — понад дві тисячі видів рослин і тварин."},
 {s:"spring",c:"Речі",lv:2,e:"🚫",t:"День без пластику",d:"Проживи цілий день, не взявши жодної нової пластикової речі.",f:"Спробуй порахувати, скільки разів за день ти торкаєшся пластику."},
 {s:"spring",c:"Люди",lv:3,e:"🔁",tg:1,t:"Обмінна толока",d:"Влаштуйте в гнізді обмін книжками, іграшками чи одягом.",f:"Річ, що знайшла нового власника, — це річ, яку не довелося виробляти."},
 
@@ -641,13 +641,13 @@ function offline(msg){
   boardHint(msg);
   const b=document.getElementById("board"); b.innerHTML="";
   const r=document.createElement("div"); r.className="row self";
-  const w=document.createElement("span"); w.className="who"; w.textContent=st.grp||"Твій рій";
+  const w=document.createElement("span"); w.className="who"; w.textContent=st.grp||"Твій Рій";
   const g=document.createElement("span"); g.className="grp"; g.textContent="поки лише ти";
   const c=document.createElement("span"); c.className="cnt"; c.textContent=total();
   r.append(w,g,c); b.appendChild(r);
 }
 
-/* ---- рої ---- */
+/* ---- Рої ---- */
 async function findRoi(code){
   try{
     return await api("/roi/" + encodeURIComponent(code.toUpperCase()));
@@ -678,7 +678,7 @@ function saveMine(){
 
 async function boot(){
   paintWho();
-  if(!st.code || !st.nick){ offline("Приєднайся до роя, щоб поступ зберігався."); return; }
+  if(!st.code || !st.nick){ offline("Приєднайся до Рою, щоб поступ зберігався."); return; }
   try{
     const mine = await loadMine();
     const had = Object.keys(st.done).length;
@@ -717,10 +717,10 @@ function drawBoard(){
   const mineKey=nkey(st.grp);
   const listed = rows.some(g=>nkey(g.grp)===mineKey);
   let hint = rows.length
-    ? "Скільки добрих справ зібрав кожен рій разом."
-    : "Поки що порожньо. Зроби першу справу — і твій рій з'явиться тут.";
-  if(st.code) hint = "Код роя «"+st.grp+"»: "+st.code+". " +
-    (listed || !rows.length ? "Ним приєднуються нові новаки." : "Цей рій тестовий, тому в таблі його немає.");
+    ? "Скільки добрих справ зібрав кожен Рій разом."
+    : "Поки що порожньо. Зроби першу справу — і твій Рій з'явиться тут.";
+  if(st.code) hint = "Код Рою «"+st.grp+"»: "+st.code+". " +
+    (listed || !rows.length ? "Ним приєднуються нові новаки." : "Цей Рій тестовий, тому в таблі його немає.");
   boardHint(hint);
   if(!rows.length) return;
   rows.forEach((g,i)=>{
@@ -759,7 +759,7 @@ document.getElementById("gJoinGo").onclick=async function(){
   const btn=this;
   const code=document.getElementById("gCode").value.trim().toUpperCase();
   const nick=document.getElementById("gNick").value.trim().slice(0,24);
-  if(!code||!nick) return gFail("Потрібні код роя і прізвисько.");
+  if(!code||!nick) return gFail("Потрібні код Рою і прізвисько.");
   busy(btn,true);
   try{
     const roi=await findRoi(code);
@@ -778,7 +778,7 @@ document.getElementById("gNewGo").onclick=async function(){
   const name=document.getElementById("gName").value.trim().slice(0,24);
   const nick=document.getElementById("gVNick").value.trim().slice(0,24);
   const test=document.getElementById("gTest").checked;
-  if(!name||!nick) return gFail("Потрібні назва роя і твоє прізвисько.");
+  if(!name||!nick) return gFail("Потрібні назва Рою і твоє прізвисько.");
   busy(btn,true);
   try{
     const roi=await createRoi(name,test);
@@ -787,9 +787,9 @@ document.getElementById("gNewGo").onclick=async function(){
     gShow("gDone"); paintWho();
     await sync();
   }catch(e){
-    gFail("Не вдалося створити рій. Спробуй ще раз.");
+    gFail("Не вдалося створити Рій. Спробуй ще раз.");
   }
-  busy(btn,false,"Створити рій");
+  busy(btn,false,"Створити Рій");
 };
 
 document.getElementById("gDoneGo").onclick=async()=>{

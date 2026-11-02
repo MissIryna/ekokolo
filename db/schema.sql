@@ -6,7 +6,7 @@
 
 begin;
 
--- ──────────────── рої ────────────────
+-- ──────────────── Рої ────────────────
 
 create table if not exists roi (
   id         bigint generated always as identity primary key,
@@ -36,7 +36,7 @@ create table if not exists novak (
 create index if not exists novak_roi_idx on novak (roi_id);
 
 -- ──────────────── табло ────────────────
--- Тестові рої не показуються.
+-- Тестові Рої не показуються.
 
 create or replace view board as
 select r.name                            as grp,
