@@ -88,6 +88,7 @@ codes = (select coalesce(jsonb_agg(distinct e), '[]'::jsonb)
 createdb ekokolo && psql ekokolo -f db/schema.sql
 cp .env.example .env            # підстав DATABASE_URL
 bundle install
+set -a; . ./.env; set +a        # app.rb сам .env не читає
 bundle exec puma -p 9292        # API
 python3 -m http.server 8000     # статика, окремий термінал
 ```
@@ -121,14 +122,11 @@ pg, rackup — і все.
 
 ## Відкриті питання
 
-- `ekokolo.pp.ua` зараз вказує на GitHub Pages. Pages не проксує
-  `/api`, тож домен має переїхати на дроплет (A-запис на його IP),
-  і nginx роздаватиме статику й API разом.
-- `limit_req` у `deploy/nginx.conf` стоїть 5r/s burst 20 — цифра
-  взята зі стелі, варто звірити з рештою навантаження дроплета.
-- Бекапи: `pg_dump` у cron раз на добу ще не налаштовано.
-- Ruby-частина не проганялася end-to-end: SQL перевірено на живому
-  Postgres 16, `bundle install` і перший запит — ні.
+- `limit_req` у `deploy/ekokolo.conf` стоїть 5r/s burst 20 — цифра
+  взята зі стелі. Рій на сходинах часто сидить за одним Wi-Fi, тобто
+  за однією IP-адресою; якщо в логах будуть 429 від своїх — піднімати.
+- Поступ, що лишився в Google Таблиці від першої версії, у базу не
+  перенесено.
 
 ## Чого не робити
 

@@ -66,10 +66,9 @@ curl --unix-socket tmp/puma.sock http://x/api/health    # {"ok":true}
 
 ## 4. DNS і сертифікат
 
-Поки цей крок не зроблено, сайт працює на GitHub Pages як раніше.
-
-1. У nic.ua для `ekokolo.pp.ua`: прибрати CNAME на GitHub, додати
-   A-запис `129.212.252.150`.
+1. У nic.ua для `ekokolo.pp.ua` лишити рівно один A-запис —
+   `129.212.252.150`. Будь-які інші A чи CNAME прибрати: браузери
+   вибирають адресу навмання, і certbot теж може постукати не туди.
 2. Дочекатися, поки `dig +short ekokolo.pp.ua` покаже цю адресу.
    Між цим моментом і кроком 5 сайт не відкриватиметься — catch-all
    обриває невідомі домени. Це кілька хвилин; краще ввечері.
@@ -122,6 +121,5 @@ sudo systemctl reload ekokolo
 
 ## Відкат
 
-Повернути в nic.ua CNAME на `MissIryna.github.io` — і через кілька
-хвилин сайт знову з GitHub Pages. Поступ дітей у localStorage живе під
-тим самим доменом, тож нікуди не дінеться.
+Коду — `git checkout <коміт>` у `~/ekokolo` і `sudo systemctl reload
+ekokolo`. Бази — з дампу (команда відновлення у `deploy/backup.sh`).

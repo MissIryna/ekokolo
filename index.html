@@ -146,6 +146,15 @@ button{font:inherit;color:inherit;cursor:pointer}
 .sheet .row2 button{flex:1;border-radius:14px;padding:11px;font-weight:700;font-size:14.5px;border:2px solid var(--line);background:transparent}
 .sheet .row2 .prim{background:var(--accent);color:#fff;border-color:var(--accent)}
 
+.whochip{background:var(--card);border:2px solid var(--line);border-radius:13px;
+  padding:9px 14px;font-size:14px;font-weight:700;max-width:230px;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.linky{background:none;border:none;padding:0;font-size:14px;font-weight:600;
+  color:var(--accent);text-decoration:underline;text-underline-offset:3px}
+.gcheck{display:flex;align-items:center;gap:8px;font-size:13.5px;color:var(--muted);margin-top:2px}
+.gcheck input{width:18px;height:18px;flex:none}
+.gcode{font-family:Unbounded,sans-serif;font-weight:800;font-size:38px;letter-spacing:.14em;
+  margin:14px 0;color:var(--accent)}
 .gfields{display:flex;flex-direction:column;gap:9px;text-align:left}
 .gfields input{font:inherit;font-size:15px;padding:11px 13px;width:100%;
   background:var(--page);color:var(--ink);border:2px solid var(--line);border-radius:13px}
@@ -167,8 +176,7 @@ button{font:inherit;color:inherit;cursor:pointer}
       <p>П'ятдесят сім справ для природи — по колу цілого пластового року. Виконав справу — зітри поле й забери наліпку.</p>
     </div>
     <div class="me">
-      <input id="nick" placeholder="Твоє прізвисько" maxlength="24" autocomplete="off">
-      <input id="grp" placeholder="Мій рій" maxlength="24" autocomplete="off">
+      <button id="who" class="whochip">Хто ти?</button>
     </div>
   </header>
 
@@ -184,7 +192,7 @@ button{font:inherit;color:inherit;cursor:pointer}
   <div class="tools">
     <button id="tRules" aria-expanded="false">Як грати</button>
     <button id="tAlbum" aria-expanded="false">Мої наліпки</button>
-    <button id="tBoard" aria-expanded="false">Табло роїв</button>
+    <button id="tBoard" aria-expanded="false">Табло Роїв</button>
   </div>
   <section class="panel" id="pRules" hidden>
     <h3>Як грати</h3>
@@ -194,9 +202,9 @@ button{font:inherit;color:inherit;cursor:pointer}
       <li>Зроби її по-справжньому.</li>
       <li>Натисни «Зроблено!» і зітри поле пальцем. Під ним наліпка й факт, якого ти ще не знав.</li>
     </ol>
-    <p class="mini">Листочки показують, яка справа велика. Один листочок — упораєшся сам за кілька хвилин. Три — треба цілий рій або хтось дорослий поруч.</p>
+    <p class="mini">Листочки показують, яка справа велика. Один листочок — упораєшся сам за кілька хвилин. Три — треба цілий Рій або хтось дорослий поруч.</p>
     <p class="mini">Справи поділені на два блоки. «Можу сам» роби, коли захочеш. «Роєм або з дорослими» плануйте разом на сходинах.</p>
-    <p class="mini">Порядок будь-який, і зробити все одразу неможливо — гра розрахована на цілий рік. Твої наліпки збираються в «Моїх наліпках», а поступ усього роя видно в «Таблі роїв».</p>
+    <p class="mini">Порядок будь-який, і зробити все одразу неможливо — гра розрахована на цілий рік. Твої наліпки збираються в «Моїх наліпках», а поступ усього Рою видно в «Таблі Роїв».</p>
     <p class="mini"><b>Одне важливе.</b> Наліпка без справи — обман самого себе. Пластун так не робить.</p>
     <p class="mini">Виховникам: гра закриває більшість пунктів підрозділу «довкілля» новацьких проб, а також А.4 про добрі справи. Ройові справи варто розписати на рік наперед, ще на початку осені.</p>
   </section>
@@ -206,7 +214,7 @@ button{font:inherit;color:inherit;cursor:pointer}
     <div class="album" id="album"></div>
   </section>
   <section class="panel" id="pBoard" hidden>
-    <h3>Табло роїв</h3>
+    <h3>Табло Роїв</h3>
     <p class="hint" id="boardHint">Тут видно, як просувається все гніздо.</p>
     <div class="rank" id="board"></div>
   </section>
@@ -269,14 +277,37 @@ button{font:inherit;color:inherit;cursor:pointer}
 
 <div class="veil" id="gate" hidden>
   <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="gTitle">
-    <h3 id="gTitle">Хто ти?</h3>
-    <p class="sub">Впиши свій рій і прізвисько — так твої наліпки знайдуться з будь-якого телефона.</p>
-    <div class="gfields">
-      <input id="gGrp" placeholder="Мій рій" maxlength="24" autocomplete="off">
-      <input id="gNick" placeholder="Прізвисько" maxlength="24" autocomplete="off">
+    <h3 id="gTitle">Вітаємо в Колі</h3>
+
+    <div id="gJoin">
+      <p class="sub">Виховник дасть тобі код Рою. Впиши його разом зі своїм прізвиськом.</p>
+      <div class="gfields">
+        <input id="gCode" placeholder="Код Рою" maxlength="8" autocomplete="off" autocapitalize="characters" spellcheck="false">
+        <input id="gNick" placeholder="Твоє прізвисько" maxlength="24" autocomplete="off">
+      </div>
+      <div class="row2"><button id="gJoinGo" class="prim">Приєднатися</button></div>
+      <p class="mini"><button class="linky" id="gToNew">Я виховник — створити Рій</button></p>
     </div>
-    <p class="gerr" id="gErr" hidden>Потрібні обидва поля.</p>
-    <div class="row2"><button id="gGo" class="prim">Починаємо</button></div>
+
+    <div id="gNew" hidden>
+      <p class="sub">Створи Рій — гра видасть код, який роздаси новакам на сходинах.</p>
+      <div class="gfields">
+        <input id="gName" placeholder="Назва Рою" maxlength="24" autocomplete="off">
+        <input id="gVNick" placeholder="Твоє прізвисько" maxlength="24" autocomplete="off">
+        <label class="gcheck"><input type="checkbox" id="gTest"> тестовий Рій, не показувати в таблі</label>
+      </div>
+      <div class="row2"><button id="gNewGo" class="prim">Створити Рій</button></div>
+      <p class="mini"><button class="linky" id="gToJoin">← Я новак, у мене є код</button></p>
+    </div>
+
+    <div id="gDone" hidden>
+      <p class="sub">Рій створено. Ось код для новаків:</p>
+      <p class="gcode" id="gCodeOut">—</p>
+      <p class="mini">Запиши його. Побачити знову можна буде в «Таблі Роїв».</p>
+      <div class="row2"><button id="gDoneGo" class="prim">Починаємо</button></div>
+    </div>
+
+    <p class="gerr" id="gErr" hidden></p>
   </div>
 </div>
 
@@ -333,7 +364,7 @@ const D=[
 {s:"winter",c:"Речі",lv:2,e:"🧵",tg:1,t:"Мішечок для хліба",d:"Пошийте з дорослими торбинку з тканини замість пакета.",f:"У тканинному мішечку хліб довше не черствіє."},
 {s:"winter",c:"Живе",lv:2,e:"🐦‍⬛",t:"Хто зимує поруч",d:"Знайди й упізнай трьох птахів, які зимують у твоєму місті.",f:"Синиці, повзики й дятли нікуди не відлітають — вони зимують із нами."},
 
-{s:"winter",c:"Живе",lv:2,e:"🐕‍🦺",tg:1,t:"Чужий пес",d:"Дізнайся, як поводитися, коли зустрів незнайомого собаку, і покажи це роєві.",f:"Собака кидається найчастіше тоді, коли злякався. Не тікай і не дивись йому просто в очі."},
+{s:"winter",c:"Живе",lv:2,e:"🐕‍🦺",tg:1,t:"Чужий пес",d:"Дізнайся, як поводитися, коли зустрів незнайомого собаку, і покажи це Роєві.",f:"Собака кидається найчастіше тоді, коли злякався. Не тікай і не дивись йому просто в очі."},
 
 {s:"spring",c:"Живе",lv:3,e:"🌳",tg:1,t:"Посади дерево",d:"Разом із дорослими посади дерево й домовся, хто його поливатиме.",f:"Дерево найкраще приживається, поки на ньому ще немає листя."},
 {s:"spring",c:"Живе",lv:1,e:"🌱",t:"Город на підвіконні",d:"Посій зелень у горщику й доглядай її три тижні.",f:"Рослині на підвіконні світло потрібне навіть більше за воду."},
@@ -345,7 +376,7 @@ const D=[
 {s:"spring",c:"Живе",lv:3,e:"🐝",tg:1,t:"Готель для комах",d:"Зроби з паличок і трубочок домівку для диких бджіл.",f:"Дикі бджоли запилюють рослини краще за домашніх."},
 {s:"spring",c:"Сміття",lv:2,e:"♻️",t:"Тиждень сортування",d:"Цілий тиждень сортуй сміття вдома сам, без підказок.",f:"Відсортоване сміття — це вже не сміття, а сировина."},
 {s:"spring",c:"Речі",lv:2,e:"🧰",t:"Полагодь, не викидай",d:"Пришийте ґудзик, підклейте книжку, полагодьте іграшку.",f:"Найекологічніша річ — та, яку ти не купив."},
-{s:"spring",c:"Люди",lv:3,e:"📖",tg:1,t:"Гутірка про свій вид",d:"Обери тварину з Червоної книги України й розкажи про неї своєму роєві.",f:"У Червоній книзі України — понад дві тисячі видів рослин і тварин."},
+{s:"spring",c:"Люди",lv:3,e:"📖",tg:1,t:"Гутірка про свій вид",d:"Обери тварину з Червоної книги України й розкажи про неї своєму Роєві.",f:"У Червоній книзі України — понад дві тисячі видів рослин і тварин."},
 {s:"spring",c:"Речі",lv:2,e:"🚫",t:"День без пластику",d:"Проживи цілий день, не взявши жодної нової пластикової речі.",f:"Спробуй порахувати, скільки разів за день ти торкаєшся пластику."},
 {s:"spring",c:"Люди",lv:3,e:"🔁",tg:1,t:"Обмінна толока",d:"Влаштуйте в гнізді обмін книжками, іграшками чи одягом.",f:"Річ, що знайшла нового власника, — це річ, яку не довелося виробляти."},
 
@@ -379,12 +410,13 @@ const ARC={autumn:[4,86],winter:[94,176],spring:[184,266],summer:[274,356]};
 
 /* ============ стан ============ */
 const KEY="ekolo.v1";
-let st={nick:"",grp:"",done:{}};
+let st={nick:"",grp:"",code:"",done:{}};
 let cur="autumn";
 
 function load(){ try{ const r=localStorage.getItem(KEY); if(r) st=Object.assign(st,JSON.parse(r)); }catch(e){} }
 function save(){ try{ localStorage.setItem(KEY,JSON.stringify(st)); }catch(e){} }
 const total=()=>Object.keys(st.done).length;
+const nkey=v=>String(v||"").trim().toLowerCase();
 const seasonDone=s=>D.filter(d=>d.s===s&&st.done[d.id]).length;
 const seasonAll=s=>D.filter(d=>d.s===s).length;
 
@@ -572,85 +604,108 @@ toggle(document.getElementById("tRules"),document.getElementById("pRules"));
 toggle(document.getElementById("tAlbum"),document.getElementById("pAlbum"));
 toggle(document.getElementById("tBoard"),document.getElementById("pBoard"));
 
-/* ============ профіль ============ */
-const nick=document.getElementById("nick"), grp=document.getElementById("grp");
-let tmr=null;
-function onEdit(){
-  st.nick=nick.value.trim(); st.grp=grp.value.trim(); save();
-  clearTimeout(tmr); tmr=setTimeout(sync,900);
+/* ============ хто ти ============ */
+const whoBtn=document.getElementById("who");
+function paintWho(){
+  whoBtn.textContent = (st.grp && st.nick) ? (st.grp+" · "+st.nick) : "Хто ти?";
 }
-nick.addEventListener("input",onEdit); grp.addEventListener("input",onEdit);
+whoBtn.onclick=()=>openGate();
 
-/* ============ з'єднання з Google Таблицею ============ */
-/* Встав сюди адресу веб-застосунку Apps Script (крок 4 в README). */
-const API = "https://script.google.com/macros/s/AKfycby8DbrU1Kfo1ZpMnxVEUvwCStbgCCWi2qFNXb4rLHOuN2asCKlrmCZV3GTgf8-vXcPZ/exec";
+/* ============ API ============ */
+/* Порожній рядок = той самий хост, що й сторінка (nginx проксює /api).
+   Для розробки з іншого порту: "http://localhost:9292". */
+const API = "";
 
 let rows=[], chain=Promise.resolve();
 
 function boardHint(t){ document.getElementById("boardHint").textContent=t; }
-function ready(){ return !!(API && st.grp && st.nick); }
+function ready(){ return !!(st.code && st.nick); }
+
+async function api(path, opts){
+  opts = opts || {};
+  const res = await fetch(API + "/api" + path, {
+    method: opts.method || "GET",
+    headers: opts.body ? {"Content-Type":"application/json"} : undefined,
+    body: opts.body ? JSON.stringify(opts.body) : undefined
+  });
+  let data=null;
+  try{ data = await res.json(); }catch(e){}
+  if(!res.ok){
+    const err = new Error((data && data.error) || ("помилка " + res.status));
+    err.status = res.status;
+    throw err;
+  }
+  return data;
+}
 
 function offline(msg){
   boardHint(msg);
   const b=document.getElementById("board"); b.innerHTML="";
   const r=document.createElement("div"); r.className="row self";
-  const w=document.createElement("span"); w.className="who"; w.textContent=st.grp||"Твій рій";
+  const w=document.createElement("span"); w.className="who"; w.textContent=st.grp||"Твій Рій";
   const g=document.createElement("span"); g.className="grp"; g.textContent="поки лише ти";
   const c=document.createElement("span"); c.className="cnt"; c.textContent=total();
   r.append(w,g,c); b.appendChild(r);
 }
 
-let jsonpN=0;
-function call(params){
-  return new Promise(function(resolve,reject){
-    var cb="ekoCb"+(++jsonpN);
-    var sc=document.createElement("script");
-    var t=setTimeout(function(){ done(new Error("час вийшов")); },20000);
-    function done(err,data){
-      clearTimeout(t);
-      try{ delete window[cb]; }catch(e){ window[cb]=undefined; }
-      if(sc.parentNode) sc.parentNode.removeChild(sc);
-      err?reject(err):resolve(data);
-    }
-    window[cb]=function(d){
-      if(d&&d.ok) done(null,d);
-      else done(new Error((d&&d.error)||"помилка таблиці"));
-    };
-    var q=[];
-    for(var k in params) q.push(encodeURIComponent(k)+"="+encodeURIComponent(params[k]));
-    q.push("callback="+cb);
-    sc.src=API+"?"+q.join("&");
-    sc.onerror=function(){ done(new Error("немає зв'язку з таблицею")); };
-    document.head.appendChild(sc);
+/* ---- Рої ---- */
+async function findRoi(code){
+  try{
+    return await api("/roi/" + encodeURIComponent(code.toUpperCase()));
+  }catch(e){
+    if(e.status === 404) return null;
+    throw e;
+  }
+}
+function createRoi(name, test){
+  return api("/roi", { method:"POST", body:{ name:name, test:!!test } });
+}
+
+/* ---- поступ ---- */
+async function loadMine(){
+  const d = await api("/progress?code=" + encodeURIComponent(st.code) +
+                      "&nick=" + encodeURIComponent(st.nick));
+  return Array.isArray(d.done) ? d.done : [];
+}
+function loadBoard(){
+  return api("/board");
+}
+function saveMine(){
+  return api("/progress", {
+    method:"POST",
+    body:{ code: st.code, nick: st.nick, codes: Object.keys(st.done) }
   });
 }
 
 async function boot(){
-  if(!API) return offline("Таблицю ще не під'єднано. Поступ зберігається на цьому пристрої.");
-  if(!st.grp||!st.nick) return offline("Впиши рій і прізвисько — тоді поступ збережеться для всіх твоїх пристроїв.");
+  paintWho();
+  if(!st.code || !st.nick){ offline("Приєднайся до Рою, щоб поступ зберігався."); return; }
   try{
-    const d=await call({action:"load",grp:st.grp,nick:st.nick});
-    const srv=d.done||[];
-    const before=Object.keys(st.done).length;
-    srv.forEach(c=>{ if(!st.done[c]) st.done[c]=1; });
+    const mine = await loadMine();
+    const had = Object.keys(st.done).length;
+    mine.forEach(c=>{ if(!st.done[c]) st.done[c]=1; });
     save();
-    rows=d.board||[];
+    rows = await loadBoard();
     render(); drawBoard();
-    // якщо на пристрої було щось, чого немає в таблиці — дописуємо
-    if(Object.keys(st.done).length!==srv.length || before!==srv.length) sync();
+    if(Object.keys(st.done).length !== mine.length || had !== mine.length) sync();
   }catch(e){
-    offline("Не вдалося з'єднатися з таблицею. Поступ збережено тут, на пристрої.");
+    offline("Не вдалося з'єднатися з сервером. Поступ збережено тут, на пристрої.");
   }
 }
 
 function sync(){
   if(!ready()) return chain;
-  chain=chain.then(async()=>{
+  chain = chain.then(async()=>{
     try{
-      const d=await call({action:"save",grp:st.grp,nick:st.nick,codes:Object.keys(st.done).join(",")});
-      rows=d.board||[]; drawBoard();
+      const d = await saveMine();
+      if(Array.isArray(d.done)){
+        d.done.forEach(c=>{ if(!st.done[c]) st.done[c]=1; });
+        save();
+      }
+      rows = await loadBoard();
+      drawBoard(); render();
     }catch(e){
-      boardHint("Останню зміну не вдалося записати в таблицю — вона збережена на пристрої.");
+      boardHint("Останню зміну не вдалося записати — вона збережена на пристрої.");
     }
   });
   return chain;
@@ -660,50 +715,98 @@ function plural(n){ return n===1?" новак":(n>=2&&n<=4)?" новаки":" н
 
 function drawBoard(){
   const b=document.getElementById("board"); b.innerHTML="";
-  if(!rows.length){
-    boardHint("Поки що порожньо. Зроби першу справу — і твій рій з'явиться тут.");
-    return;
-  }
-  boardHint("Скільки добрих справ зібрав кожен рій разом.");
-  const mineKey=(st.grp||"").trim().toLowerCase();
+  const mineKey=nkey(st.grp);
+  const listed = rows.some(g=>nkey(g.grp)===mineKey);
+  let hint = rows.length
+    ? "Скільки добрих справ зібрав кожен Рій разом."
+    : "Поки що порожньо. Зроби першу справу — і твій Рій з'явиться тут.";
+  if(st.code) hint = "Код Рою «"+st.grp+"»: "+st.code+". " +
+    (listed || !rows.length ? "Ним приєднуються нові новаки." : "Цей Рій тестовий, тому в таблі його немає.");
+  boardHint(hint);
+  if(!rows.length) return;
   rows.forEach((g,i)=>{
     const el=document.createElement("div");
-    el.className="row"+(mineKey && String(g.grp).toLowerCase()===mineKey?" self":"");
+    el.className="row"+(mineKey && nkey(g.grp)===mineKey?" self":"");
     const n=document.createElement("span"); n.className="n"; n.textContent=(i+1);
     const w=document.createElement("span"); w.className="who"; w.textContent=g.grp;
-    const m=document.createElement("span"); m.className="grp"; m.textContent=g.n+plural(g.n);
-    const c=document.createElement("span"); c.className="cnt"; c.textContent=g.sum;
+    const m=document.createElement("span"); m.className="grp"; m.textContent=(g.n||0)+plural(g.n||0);
+    const c=document.createElement("span"); c.className="cnt"; c.textContent=g.sum||0;
     el.append(n,w,m,c); b.appendChild(el);
   });
 }
 
-/* ============ хто ти ============ */
+/* ============ екран входу ============ */
 const gate=document.getElementById("gate");
-function openGate(){
-  document.getElementById("gGrp").value=st.grp||"";
-  document.getElementById("gNick").value=st.nick||"";
-  gate.hidden=false;
-  setTimeout(()=>document.getElementById("gGrp").focus(),60);
+const gErr=document.getElementById("gErr");
+function gShow(which){
+  ["gJoin","gNew","gDone"].forEach(id=>{ document.getElementById(id).hidden = (id!==which); });
+  gErr.hidden=true;
 }
-document.getElementById("gGo").onclick=()=>{
-  const g=document.getElementById("gGrp").value.trim().slice(0,24);
-  const n=document.getElementById("gNick").value.trim().slice(0,24);
-  if(!g||!n){ document.getElementById("gErr").hidden=false; return; }
-  st.grp=g; st.nick=n; save();
-  grp.value=g; nick.value=n;
-  gate.hidden=true; render(); boot();
+function gFail(msg){ gErr.textContent=msg; gErr.hidden=false; }
+function busy(btn,on,label){
+  btn.disabled=on; btn.textContent = on ? "Хвилинку…" : label;
+}
+function openGate(){
+  document.getElementById("gCode").value=st.code||"";
+  document.getElementById("gNick").value=st.nick||"";
+  gShow("gJoin");
+  gate.hidden=false;
+  setTimeout(()=>document.getElementById("gCode").focus(),60);
+}
+document.getElementById("gToNew").onclick=()=>gShow("gNew");
+document.getElementById("gToJoin").onclick=()=>gShow("gJoin");
+
+document.getElementById("gJoinGo").onclick=async function(){
+  const btn=this;
+  const code=document.getElementById("gCode").value.trim().toUpperCase();
+  const nick=document.getElementById("gNick").value.trim().slice(0,24);
+  if(!code||!nick) return gFail("Потрібні код Рою і прізвисько.");
+  busy(btn,true);
+  try{
+    const roi=await findRoi(code);
+    if(!roi){ busy(btn,false,"Приєднатися"); return gFail("Такого коду немає. Перепитай у виховника."); }
+    st.grp=roi.name; st.code=roi.code; st.nick=nick; save();
+    gate.hidden=true; paintWho(); render();
+    await sync(); await boot();
+  }catch(e){
+    gFail("Не вдалося з'єднатися. Спробуй ще раз.");
+  }
+  busy(btn,false,"Приєднатися");
+};
+
+document.getElementById("gNewGo").onclick=async function(){
+  const btn=this;
+  const name=document.getElementById("gName").value.trim().slice(0,24);
+  const nick=document.getElementById("gVNick").value.trim().slice(0,24);
+  const test=document.getElementById("gTest").checked;
+  if(!name||!nick) return gFail("Потрібні назва Рою і твоє прізвисько.");
+  busy(btn,true);
+  try{
+    const roi=await createRoi(name,test);
+    st.grp=roi.name; st.code=roi.code; st.nick=nick; save();
+    document.getElementById("gCodeOut").textContent=roi.code;
+    gShow("gDone"); paintWho();
+    await sync();
+  }catch(e){
+    gFail("Не вдалося створити Рій. Спробуй ще раз.");
+  }
+  busy(btn,false,"Створити Рій");
+};
+
+document.getElementById("gDoneGo").onclick=async()=>{
+  gate.hidden=true; render(); await boot();
 };
 
 /* ============ старт ============ */
 load();
-nick.value=st.nick; grp.value=st.grp;
 buildWheel();
 const m=new Date().getMonth();
 cur = m>=8&&m<=10 ? "autumn" : (m===11||m<=1) ? "winter" : m<=4 ? "spring" : "summer";
 document.body.dataset.season=cur;
 render();
 if(!total()){ document.getElementById("pRules").hidden=false; document.getElementById("tRules").setAttribute("aria-expanded","true"); }
-if(!st.grp||!st.nick) openGate(); else offline("Твій поступ збережено на цьому пристрої.");
+paintWho();
+if(!st.code||!st.nick) openGate(); else offline("Твій поступ збережено на цьому пристрої.");
 boot();
 </script>
 </body>
