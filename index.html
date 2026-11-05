@@ -160,6 +160,16 @@ button{font:inherit;color:inherit;cursor:pointer}
   background:var(--page);color:var(--ink);border:2px solid var(--line);border-radius:13px}
 .gfields input::placeholder{color:var(--muted)}
 .gerr{color:var(--accent2);font-size:13px;margin:9px 0 0}
+/* відгуки виховників, лише в тестовому Рої */
+.fb{border-top:1px dashed var(--line);padding-top:9px;display:flex;flex-direction:column;gap:7px;font-size:13px;color:var(--muted)}
+.fbrow{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.fbrow button[aria-pressed]{border:2px solid var(--line);background:transparent;border-radius:10px;padding:2px 9px;font-size:16px;line-height:1.4}
+.fbrow button[aria-pressed="true"]{border-color:var(--accent2);background:color-mix(in srgb,var(--accent2) 14%,transparent)}
+.fbrow .linky{font-size:13px;margin-left:auto}
+.fb textarea,.panel textarea{font:inherit;font-size:14px;width:100%;padding:9px 11px;background:var(--page);color:var(--ink);border:2px solid var(--line);border-radius:12px;resize:vertical}
+.fbsend{align-self:flex-end;border:none;border-radius:11px;padding:7px 14px;font-weight:700;font-size:13.5px;background:var(--accent2);color:#fff}
+.fbfoot{display:flex;align-items:center;gap:10px;justify-content:flex-end;margin-top:9px}
+.fbfoot .mini{margin:0;flex:1}
 .credit{margin-top:46px;padding-top:22px;border-top:2px solid var(--line);
   display:flex;gap:16px;align-items:center;justify-content:center;flex-wrap:wrap}
 .emblem{height:82px;width:auto;flex:none;display:block}
@@ -173,7 +183,7 @@ button{font:inherit;color:inherit;cursor:pointer}
   <header class="top">
     <div class="brand">
       <h1>Коло добрих екосправ</h1>
-      <p>П'ятдесят сім справ для природи — по колу цілого пластового року. Виконав справу — зітри поле й забери наліпку.</p>
+      <p>Шістдесят дві справи для природи — по колу цілого пластового року. Виконав справу — зітри поле й забери наліпку.</p>
     </div>
     <div class="me">
       <button id="who" class="whochip">Хто ти?</button>
@@ -193,6 +203,7 @@ button{font:inherit;color:inherit;cursor:pointer}
     <button id="tRules" aria-expanded="false">Як грати</button>
     <button id="tAlbum" aria-expanded="false">Мої наліпки</button>
     <button id="tBoard" aria-expanded="false">Табло Роїв</button>
+    <button id="tFb" aria-expanded="false" hidden>Відгук про гру</button>
   </div>
   <section class="panel" id="pRules" hidden>
     <h3>Як грати</h3>
@@ -217,6 +228,13 @@ button{font:inherit;color:inherit;cursor:pointer}
     <h3>Табло Роїв</h3>
     <p class="hint" id="boardHint">Тут видно, як просувається все гніздо.</p>
     <div class="rank" id="board"></div>
+  </section>
+
+  <section class="panel" id="pFb" hidden>
+    <h3>Відгук про гру</h3>
+    <p class="hint">Це бачать лише тестові Рої. Під кожною справою можна поставити 👍 підходить, 🤔 заскладно чи ✏️ переписати. Тут — усе інше: що незрозуміло, чого бракує, що зайве.</p>
+    <textarea id="fbText" rows="4" maxlength="500" placeholder="Твій відгук"></textarea>
+    <div class="fbfoot"><p class="mini" id="fbMsg"></p><button id="fbGo" class="fbsend">Надіслати</button></div>
   </section>
 
   <div class="grid" id="grid"></div>
@@ -294,7 +312,7 @@ button{font:inherit;color:inherit;cursor:pointer}
       <div class="gfields">
         <input id="gName" placeholder="Назва Рою" maxlength="24" autocomplete="off">
         <input id="gVNick" placeholder="Твоє прізвисько" maxlength="24" autocomplete="off">
-        <label class="gcheck"><input type="checkbox" id="gTest"> тестовий Рій, не показувати в таблі</label>
+        <label class="gcheck"><input type="checkbox" id="gTest"> тестовий Рій: не в таблі, з відгуками до справ</label>
       </div>
       <div class="row2"><button id="gNewGo" class="prim">Створити Рій</button></div>
       <p class="mini"><button class="linky" id="gToJoin">← Я новак, у мене є код</button></p>
@@ -330,7 +348,7 @@ button{font:inherit;color:inherit;cursor:pointer}
 </div>
 
 <script>
-/* ============ 55 справ ============ */
+/* ============ 62 справи ============ */
 const D=[
 {s:"autumn",c:"Живе",lv:2,e:"🐦",t:"Годівничка для птахів",d:"Зроби годівничку й повісь її там, де ти зможеш її наповнювати.",f:"Синиця взимку мусить їсти майже цілий день — інакше не переживе морозну ніч."},
 {s:"autumn",c:"Живе",lv:2,e:"🍁",tg:1,t:"Листя не горить",d:"Переконай дорослих не спалювати опале листя, а скласти його в купу чи компост.",f:"Дим від горілого листя повен дрібних частинок, які шкодять легеням. А в купі те саме листя за рік стане землею."},
@@ -348,8 +366,8 @@ const D=[
 
 {s:"autumn",c:"Їжа",lv:2,e:"🍎",t:"Звідки приїхав обід",d:"Подивись на написи на продуктах удома: що виросло поруч, а що привезли здалеку.",f:"Чим ближче виросла їжа, тим менше пального витратили, щоб довезти її до тебе."},
 
-{s:"autumn",c:"Сміття",lv:3,e:"🧹",tg:1,t:"Толока в парку",d:"Виберіть роєм один парк чи сквер і приберіть його разом за один день.",f:"Восени сміття видно найкраще: трава полягла, і все, що ховалося в ній ціле літо, виходить назовні."},
-{s:"autumn",c:"Живе",lv:3,e:"🌼",tg:1,t:"Цибулини на весну",d:"Посадіть роєм цибулини біля домівки — навесні вони зійдуть першими.",f:"Цибулинам потрібен холод: без зими вони навесні не зацвітуть."},
+{s:"autumn",c:"Сміття",lv:3,e:"🧹",tg:1,t:"Толока в парку",d:"Виберіть Роєм один парк чи сквер і приберіть його разом за один день.",f:"Восени сміття видно найкраще: трава полягла, і все, що ховалося в ній ціле літо, виходить назовні."},
+{s:"autumn",c:"Живе",lv:3,e:"🌼",tg:1,t:"Цибулини на весну",d:"Посадіть Роєм цибулини біля домівки — навесні вони зійдуть першими.",f:"Цибулинам потрібен холод: без зими вони навесні не зацвітуть."},
 
 {s:"winter",c:"Живе",lv:3,e:"❄️",tg:1,t:"Годівничка цілу зиму",d:"Наповнюй свою годівничку щотижня — до самої весни.",f:"Птахи запам'ятовують місце годівлі. Почав годувати — не кидай до весни."},
 {s:"winter",c:"Живе",lv:2,e:"🎄",tg:1,t:"Ялинка з майбутнім",d:"Візьміть живу ялинку в горщику або віднесіть зрубану на переробку.",f:"Зі старих ялинок роблять тріску для доріжок у парках."},
@@ -380,7 +398,7 @@ const D=[
 {s:"spring",c:"Речі",lv:2,e:"🚫",t:"День без пластику",d:"Проживи цілий день, не взявши жодної нової пластикової речі.",f:"Спробуй порахувати, скільки разів за день ти торкаєшся пластику."},
 {s:"spring",c:"Люди",lv:3,e:"🔁",tg:1,t:"Обмінна толока",d:"Влаштуйте в гнізді обмін книжками, іграшками чи одягом.",f:"Річ, що знайшла нового власника, — це річ, яку не довелося виробляти."},
 
-{s:"spring",c:"Живе",lv:3,e:"🫖",tg:1,t:"Чай із ватри",d:"Назбирайте роєм трав, листя чи квітів і заваріть із них чай.",f:"М'яту, материнку й липу збирають, коли вони щойно розцвіли — тоді в них найбільше смаку."},
+{s:"spring",c:"Живе",lv:3,e:"🫖",tg:1,t:"Чай із ватри",d:"Назбирайте Роєм трав, листя чи квітів і заваріть із них чай.",f:"М'яту, материнку й липу збирають, коли вони щойно розцвіли — тоді в них найбільше смаку."},
 
 {s:"summer",c:"Речі",lv:2,e:"🍶",t:"Своя пляшка",d:"Цілий табір пий зі своєї пляшки, не купуючи води в пластику.",f:"Одна багаторазова пляшка замінює за літо сотні одноразових."},
 {s:"summer",c:"Сміття",lv:2,e:"⛺",t:"Чистіше, ніж було",d:"Іди з місця ночівлі, залишивши його чистішим, ніж ти його знайшов.",f:"Це головне правило кожного мандрівника."},
@@ -394,8 +412,15 @@ const D=[
 {s:"summer",c:"Речі",lv:2,e:"🥕",t:"Торбинка для городини",d:"Зроби тканинні мішечки й ходіть із ними на базар.",f:"Овочі в тканині дихають і довше не псуються."},
 {s:"summer",c:"Люди",lv:2,e:"🚰",t:"Звідки твоя вода",d:"Дізнайся, з якої річки чи свердловини п'є твоє місто, і розкажи вдома.",f:"Майже кожне українське місто п'є з конкретної річки. Знайди назву своєї."},
 {s:"summer",c:"Енергія",lv:2,e:"🌿",t:"День без екрана",d:"Проведи цілий день на природі, не вмикаючи телефон.",f:"Очам потрібно дивитися вдалечінь — на дерева, небо, обрій."},
-{s:"summer",c:"Їжа",lv:3,e:"🐝",tg:1,t:"В гості до господаря",d:"Вирушіть роєм до бджоляра, фермера або на справжній базар і подивіться, звідки береться їжа.",f:"Без бджіл зникла б більшість фруктів і овочів на твоєму столі."},
-{s:"summer",c:"Живе",lv:2,e:"🌿",t:"Три корисні, три небезпечні",d:"Знайди у своєму краї три лікарські рослини й три небезпечні. Навчись їх розрізняти.",f:"Борщівник обпікає шкіру не одразу, а аж на сонці — через кілька годин."}
+{s:"summer",c:"Їжа",lv:3,e:"🐝",tg:1,t:"В гості до господаря",d:"Вирушіть Роєм до бджоляра, фермера або на справжній базар і подивіться, звідки береться їжа.",f:"Без бджіл зникла б більшість фруктів і овочів на твоєму столі."},
+{s:"summer",c:"Живе",lv:2,e:"🌿",t:"Три корисні, три небезпечні",d:"Знайди у своєму краї три лікарські рослини й три небезпечні. Навчись їх розрізняти.",f:"Борщівник обпікає шкіру не одразу, а аж на сонці — через кілька годин."},
+
+/* Нові справи — лише тут, у кінці: номер справи — її місце в масиві. */
+{s:"spring",c:"Живе",lv:1,e:"🦔",t:"Дикі й свійські",d:"Назви п'ять диких і п'ять свійських тварин свого краю.",f:"Їжак живе в садку, але він дикий. І молоко йому шкодить: їжаки його не перетравлюють."},
+{s:"autumn",c:"Живе",lv:1,e:"🍂",t:"Гербарій листочків",d:"Збери листочки п'яти різних дерев, засуш їх у книжці й підпиши назви.",f:"Восени листя жовтіє, бо дерево забирає з нього зелене. Жовте там було ціле літо, просто ховалося."},
+{s:"winter",c:"Сміття",lv:2,e:"🗑️",t:"Сміттєвий щоденник",d:"Тиждень записуй, скільки сміття винесла твоя родина і скільки з нього пішло на переробку.",f:"Майже третина домашнього сміття — це залишки їжі. Їх можна не викидати, а компостувати."},
+{s:"spring",c:"Сміття",lv:2,e:"🧭",tg:1,t:"Мапа переробки",d:"Знайди з дорослими, де біля тебе приймають скло, папір і пластик, і намалюй дорогу туди від дому.",f:"З переробленого паперу роблять нові зошити, коробки й навіть лотки для яєць."},
+{s:"spring",c:"Живе",lv:3,e:"🪱",tg:1,t:"Свій компост",d:"Заведіть із дорослими компост і складайте туди очистки замість смітника.",f:"Дощовий черв'як за день з'їдає майже стільки, скільки важить сам, і перетворює це на землю."}
 ];
 D.forEach((d,i)=>d.id="d"+(i+1));
 
@@ -410,7 +435,7 @@ const ARC={autumn:[4,86],winter:[94,176],spring:[184,266],summer:[274,356]};
 
 /* ============ стан ============ */
 const KEY="ekolo.v1";
-let st={nick:"",grp:"",code:"",done:{}};
+let st={nick:"",grp:"",code:"",done:{},test:false,fb:{}};
 let cur="autumn";
 
 function load(){ try{ const r=localStorage.getItem(KEY); if(r) st=Object.assign(st,JSON.parse(r)); }catch(e){} }
@@ -505,6 +530,7 @@ function card(d){
     b.onclick=()=>{ st.done[d.id]=Date.now(); save(); sync(); render(); openScratch(d); };
     c.appendChild(b);
   }
+  if(st.test) c.appendChild(fbBox(d));
   return c;
 }
 function head(title,note){
@@ -603,11 +629,13 @@ function toggle(btn,pan){
 toggle(document.getElementById("tRules"),document.getElementById("pRules"));
 toggle(document.getElementById("tAlbum"),document.getElementById("pAlbum"));
 toggle(document.getElementById("tBoard"),document.getElementById("pBoard"));
+toggle(document.getElementById("tFb"),document.getElementById("pFb"));
 
 /* ============ хто ти ============ */
 const whoBtn=document.getElementById("who");
 function paintWho(){
   whoBtn.textContent = (st.grp && st.nick) ? (st.grp+" · "+st.nick) : "Хто ти?";
+  paintFb();
 }
 whoBtn.onclick=()=>openGate();
 
@@ -681,6 +709,8 @@ async function boot(){
   paintWho();
   if(!st.code || !st.nick){ offline("Приєднайся до Рою, щоб поступ зберігався."); return; }
   try{
+    const roi = await findRoi(st.code);
+    if(roi && st.test !== !!roi.test){ st.test=!!roi.test; save(); paintWho(); render(); }
     const mine = await loadMine();
     const had = Object.keys(st.done).length;
     mine.forEach(c=>{ if(!st.done[c]) st.done[c]=1; });
@@ -735,6 +765,79 @@ function drawBoard(){
   });
 }
 
+/* ============ відгуки виховників ============ */
+/* Лише в тестовому Рої: виховники перевіряють справи, перш ніж дати гру
+   новакам. Справжні Рої цього не бачать. Чернетка лежить у st.fb, тож
+   перемальовування картки її не з'їдає. */
+const MARKS=[["ok","👍","підходить"],["hard","🤔","заскладно"],["fix","✏️","переписати"]];
+const fbOpen=new Set();
+
+function sendFb(body){
+  return api("/feedback",{ method:"POST", body:Object.assign({ code:st.code, nick:st.nick }, body) });
+}
+function fbBox(d){
+  const mine=st.fb[d.id]||{m:"",n:"",s:""};
+  const w=document.createElement("div"); w.className="fb";
+  const row=document.createElement("div"); row.className="fbrow";
+  const l=document.createElement("span"); l.textContent="Для виховника:";
+  row.appendChild(l);
+  MARKS.forEach(([k,e,t])=>{
+    const b=document.createElement("button");
+    b.textContent=e; b.title=t; b.setAttribute("aria-label",t);
+    b.setAttribute("aria-pressed",String(mine.m===k));
+    b.onclick=()=>{ mine.m=k; fbSave(d,mine); };
+    row.appendChild(b);
+  });
+  const more=document.createElement("button"); more.className="linky";
+  more.textContent=mine.n.trim()?"коментар ✓":"коментар";
+  more.onclick=()=>{ fbOpen.has(d.id)?fbOpen.delete(d.id):fbOpen.add(d.id); render(); };
+  row.appendChild(more);
+  w.appendChild(row);
+  if(fbOpen.has(d.id)){
+    const ta=document.createElement("textarea");
+    ta.rows=3; ta.maxLength=500; ta.value=mine.n; ta.placeholder="Що не так і як краще?";
+    ta.oninput=()=>{ mine.n=ta.value; mine.s=""; st.fb[d.id]=mine; save(); };
+    const s=document.createElement("button"); s.className="fbsend"; s.textContent="Надіслати";
+    s.onclick=()=>{ fbOpen.delete(d.id); fbSave(d,mine); };
+    w.append(ta,s);
+    setTimeout(()=>ta.focus(),0);
+  }
+  if(mine.s){
+    const m=document.createElement("span");
+    m.textContent = mine.s==="ok" ? "Надіслано, дякуємо." : "Не вдалося надіслати. Натисни ще раз.";
+    w.appendChild(m);
+  }
+  return w;
+}
+async function fbSave(d,mine){
+  if(!mine.m && !mine.n.trim()) return;
+  st.fb[d.id]=mine; mine.s=""; save(); render();
+  try{
+    await sendFb({ deed:d.id, title:d.t, mark:mine.m||null, note:mine.n });
+    mine.s="ok";
+  }catch(e){ mine.s="err"; }
+  save(); render();
+}
+
+document.getElementById("fbGo").onclick=async function(){
+  const ta=document.getElementById("fbText"), msg=document.getElementById("fbMsg");
+  const note=ta.value.trim();
+  if(!note) return;
+  busy(this,true);
+  try{
+    await sendFb({ note:note });
+    ta.value=""; msg.textContent="Надіслано, дякуємо.";
+  }catch(e){
+    msg.textContent="Не вдалося надіслати. Спробуй ще раз.";
+  }
+  busy(this,false,"Надіслати");
+};
+function paintFb(){
+  const t=document.getElementById("tFb"), p=document.getElementById("pFb");
+  t.hidden=!st.test;
+  if(!st.test){ p.hidden=true; t.setAttribute("aria-expanded","false"); }
+}
+
 /* ============ екран входу ============ */
 const gate=document.getElementById("gate");
 const gErr=document.getElementById("gErr");
@@ -776,7 +879,7 @@ document.getElementById("gJoinGo").onclick=async function(){
   try{
     const roi=await findRoi(code);
     if(!roi){ busy(btn,false,"Приєднатися"); return gFail("Такого коду немає. Перепитай у виховника."); }
-    st.grp=roi.name; st.code=roi.code; st.nick=nick; save();
+    st.grp=roi.name; st.code=roi.code; st.nick=nick; st.test=!!roi.test; save();
     gate.hidden=true; paintWho(); render();
     await sync(); await boot();
   }catch(e){
@@ -794,7 +897,7 @@ document.getElementById("gNewGo").onclick=async function(){
   busy(btn,true);
   try{
     const roi=await createRoi(name,test);
-    st.grp=roi.name; st.code=roi.code; st.nick=nick; save();
+    st.grp=roi.name; st.code=roi.code; st.nick=nick; st.test=!!test; save();
     document.getElementById("gCodeOut").textContent=roi.code;
     gShow("gDone"); paintWho();
     await sync();

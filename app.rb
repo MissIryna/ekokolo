@@ -29,6 +29,7 @@ class Ekokolo < Sinatra::Base
   MAX_DEEDS = 200
   DEED_RE   = /\Ad\d{1,3}\z/
   MAX_BODY  = 64 * 1024
+  MARKS     = %w[ok hard fix].freeze
 
   configure do
     set :show_exceptions, false
@@ -122,7 +123,7 @@ class Ekokolo < Sinatra::Base
   # Новак перевіряє код, який дав виховник.
   get "/api/roi/:code" do
     row = roi_by_code!(params[:code])
-    json(id: row[:id], name: row[:name], code: row[:code])
+    json(id: row[:id], name: row[:name], code: row[:code], test: row[:test])
   end
 
   # ──────────────── поступ ────────────────
@@ -165,6 +166,39 @@ class Ekokolo < Sinatra::Base
     SQL
 
     json(done: row[:codes].to_a)
+  end
+
+  # ──────────────── відгуки ────────────────
+
+  # Виховники оцінюють справи перед тим, як дати гру новакам. Тільки з
+  # тестового Рою: у справжньому діти цього не бачать і не шлють.
+  # Відгук на справу оновлюється, загальний (без deed) — дописується.
+  post "/api/feedback" do
+    roi = roi_by_code!(payload["code"])
+    fail!(403, "відгуки приймаємо лише з тестового Рою") unless roi[:test]
+    nick = clean(payload["nick"])
+    fail!(422, "потрібне прізвисько") if nick.empty?
+
+    deed = payload["deed"]&.to_s
+    fail!(422, "невідома справа") if deed && !deed.match?(DEED_RE)
+    mark = payload["mark"]&.to_s
+    fail!(422, "невідома оцінка") if mark && !MARKS.include?(mark)
+    note = clean(payload["note"], 500)
+    fail!(422, "порожній відгук") if mark.nil? && note.empty?
+
+    row = { roi_id: roi[:id], nick: nick, nick_key: nick_key(nick), deed: deed,
+            title: clean(payload["title"], 80), mark: mark, note: note }
+    if deed
+      DB[:vidguk].insert_conflict(
+        target: %i[roi_id nick_key deed],
+        update: { nick: Sequel[:excluded][:nick], title: Sequel[:excluded][:title],
+                  mark: Sequel[:excluded][:mark], note: Sequel[:excluded][:note],
+                  updated_at: Sequel::CURRENT_TIMESTAMP }
+      ).insert(row)
+    else
+      DB[:vidguk].insert(row)
+    end
+    json(ok: true)
   end
 
   # ──────────────── табло ────────────────
