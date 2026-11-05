@@ -35,6 +35,19 @@ create table if not exists novak (
 
 create index if not exists novak_roi_idx on novak (roi_id);
 
+-- ──────────────── виховник ────────────────
+-- lead_key — другий секрет, лише для виховника: з ним видно новаків Рою,
+-- їх можна приховати чи злити. У Роїв, створених до нього, — null;
+-- такі ключі видаються вручну.
+-- hidden — новак прибраний виховником: не в табло, не в списку, але рядок
+-- лишається, бо телефон дитини однаково дописував би справи назад.
+-- alias_of — прізвисько злите в інше: записи під ним ідуть у цільовий рядок.
+
+alter table roi   add column if not exists lead_key text unique
+  check (lead_key ~ '^[A-Z0-9]{8}$');
+alter table novak add column if not exists hidden   boolean not null default false;
+alter table novak add column if not exists alias_of bigint references novak(id) on delete set null;
+
 -- ──────────────── відгуки ────────────────
 -- Виховники оцінюють справи, поки грають у тестовому Рої.
 -- deed = null — відгук про гру загалом; таких може бути скільки завгодно.
@@ -57,14 +70,14 @@ create table if not exists vidguk (
 );
 
 -- ──────────────── табло ────────────────
--- Тестові Рої не показуються.
+-- Тестові Рої не показуються, приховані й злиті новаки не рахуються.
 
 create or replace view board as
 select r.name                            as grp,
        coalesce(sum(n.cnt), 0)::integer  as sum,
        count(n.id)::integer              as n
 from roi r
-left join novak n on n.roi_id = r.id
+left join novak n on n.roi_id = r.id and not n.hidden
 where not r.test
 group by r.id, r.name;
 

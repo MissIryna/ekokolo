@@ -153,6 +153,7 @@ button{font:inherit;color:inherit;cursor:pointer}
   color:var(--accent);text-decoration:underline;text-underline-offset:3px}
 .gcheck{display:flex;align-items:center;gap:8px;font-size:13.5px;color:var(--muted);margin-top:2px}
 .gcheck input{width:18px;height:18px;flex:none}
+.gkey{font-size:26px!important;letter-spacing:.1em!important;color:var(--accent2)!important}
 .gcode{font-family:Unbounded,sans-serif;font-weight:800;font-size:38px;letter-spacing:.14em;
   margin:14px 0;color:var(--accent)}
 .gfields{display:flex;flex-direction:column;gap:9px;text-align:left}
@@ -170,6 +171,24 @@ button{font:inherit;color:inherit;cursor:pointer}
 .fbsend{align-self:flex-end;border:none;border-radius:11px;padding:7px 14px;font-weight:700;font-size:13.5px;background:var(--accent2);color:#fff}
 .fbfoot{display:flex;align-items:center;gap:10px;justify-content:flex-end;margin-top:9px}
 .fbfoot .mini{margin:0;flex:1}
+/* мій Рій — лише з ключем виховника */
+.leadhead{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:14px;margin:6px 0 12px}
+.leadhead b{font-family:Unbounded,sans-serif;letter-spacing:.08em;color:var(--accent)}
+.nv{border-bottom:1px solid var(--line)}
+.nv:last-child{border-bottom:none}
+.nv>button{display:flex;align-items:center;gap:10px;width:100%;background:none;border:none;padding:10px 4px;text-align:left}
+.nv .who{font-weight:600;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.nv .real{color:var(--muted);font-weight:400;font-size:13px}
+.nv .cnt{font-family:Unbounded;font-weight:600;font-size:15px;color:var(--accent)}
+.nvbody{padding:2px 4px 14px;display:flex;flex-direction:column;gap:10px;font-size:14px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{border:1.5px solid var(--line);border-radius:999px;padding:3px 10px;font-size:13px}
+.chip i{font-style:normal;color:var(--accent2);font-weight:700}
+.nvbody label{display:flex;flex-direction:column;gap:4px;color:var(--muted);font-size:13px}
+.nvbody input,.nvbody select{font:inherit;font-size:14px;padding:8px 10px;background:var(--page);color:var(--ink);border:2px solid var(--line);border-radius:11px}
+.acts{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.acts button,.leadbtn{border:2px solid var(--line);background:transparent;border-radius:11px;padding:7px 12px;font-weight:600;font-size:13.5px}
+.acts button.warn,.leadbtn.warn{border-color:var(--accent2);color:var(--accent2)}
 .credit{margin-top:46px;padding-top:22px;border-top:2px solid var(--line);
   display:flex;gap:16px;align-items:center;justify-content:center;flex-wrap:wrap}
 .emblem{height:82px;width:auto;flex:none;display:block}
@@ -204,6 +223,7 @@ button{font:inherit;color:inherit;cursor:pointer}
     <button id="tAlbum" aria-expanded="false">Мої наліпки</button>
     <button id="tBoard" aria-expanded="false">Табло Роїв</button>
     <button id="tFb" aria-expanded="false" hidden>Відгук про гру</button>
+    <button id="tLead" aria-expanded="false" hidden>Мій Рій</button>
   </div>
   <section class="panel" id="pRules" hidden>
     <h3>Як грати</h3>
@@ -235,6 +255,15 @@ button{font:inherit;color:inherit;cursor:pointer}
     <p class="hint">Це бачать лише тестові Рої. Під кожною справою можна поставити 👍 підходить, 🤔 заскладно чи ✏️ переписати. Тут — усе інше: що незрозуміло, чого бракує, що зайве.</p>
     <textarea id="fbText" rows="4" maxlength="500" placeholder="Твій відгук"></textarea>
     <div class="fbfoot"><p class="mini" id="fbMsg"></p><button id="fbGo" class="fbsend">Надіслати</button></div>
+  </section>
+
+  <section class="panel" id="pLead" hidden>
+    <h3 id="leadTitle">Мій Рій</h3>
+    <div class="leadhead" id="leadHead"></div>
+    <p class="hint" id="leadHint"></p>
+    <div id="leadList"></div>
+    <p class="mini" id="leadHiddenHead" hidden></p>
+    <div id="leadHidden"></div>
   </section>
 
   <div class="grid" id="grid"></div>
@@ -305,6 +334,17 @@ button{font:inherit;color:inherit;cursor:pointer}
       </div>
       <div class="row2"><button id="gLater">Пізніше</button><button id="gJoinGo" class="prim">Приєднатися</button></div>
       <p class="mini"><button class="linky" id="gToNew">Я виховник — створити Рій</button></p>
+      <p class="mini"><button class="linky" id="gToLead">Я виховник — у мене є ключ</button></p>
+    </div>
+
+    <div id="gLead" hidden>
+      <p class="sub">Ключ виховника ти отримав, коли створював Рій. З ним видно твоїх новаків.</p>
+      <div class="gfields">
+        <input id="gKey" placeholder="Ключ виховника" maxlength="8" autocomplete="off" autocapitalize="characters" spellcheck="false">
+        <input id="gLNick" placeholder="Твоє прізвисько" maxlength="24" autocomplete="off">
+      </div>
+      <div class="row2"><button id="gLeadGo" class="prim">Увійти</button></div>
+      <p class="mini"><button class="linky" id="gLeadBack">← Назад</button></p>
     </div>
 
     <div id="gNew" hidden>
@@ -321,7 +361,9 @@ button{font:inherit;color:inherit;cursor:pointer}
     <div id="gDone" hidden>
       <p class="sub">Рій створено. Ось код для новаків:</p>
       <p class="gcode" id="gCodeOut">—</p>
-      <p class="mini">Запиши його. Побачити знову можна буде в «Таблі Роїв».</p>
+      <p class="sub">А це твій ключ виховника — лише для тебе:</p>
+      <p class="gcode gkey" id="gKeyOut">—</p>
+      <p class="mini">Запиши обидва. З ключем ти зайдеш у «Мій Рій» з будь-якого телефона: побачиш новаків, їхні справи, зможеш прибрати зайвих. Новакам ключ не давай.</p>
       <div class="row2"><button id="gDoneGo" class="prim">Починаємо</button></div>
     </div>
 
@@ -435,7 +477,7 @@ const ARC={autumn:[4,86],winter:[94,176],spring:[184,266],summer:[274,356]};
 
 /* ============ стан ============ */
 const KEY="ekolo.v1";
-let st={nick:"",grp:"",code:"",done:{},test:false,fb:{}};
+let st={nick:"",grp:"",code:"",done:{},test:false,fb:{},lead:"",names:{}};
 let cur="autumn";
 
 function load(){ try{ const r=localStorage.getItem(KEY); if(r) st=Object.assign(st,JSON.parse(r)); }catch(e){} }
@@ -630,12 +672,14 @@ toggle(document.getElementById("tRules"),document.getElementById("pRules"));
 toggle(document.getElementById("tAlbum"),document.getElementById("pAlbum"));
 toggle(document.getElementById("tBoard"),document.getElementById("pBoard"));
 toggle(document.getElementById("tFb"),document.getElementById("pFb"));
+toggle(document.getElementById("tLead"),document.getElementById("pLead"));
+document.getElementById("tLead").addEventListener("click",()=>{ if(!document.getElementById("pLead").hidden) loadLead(); });
 
 /* ============ хто ти ============ */
 const whoBtn=document.getElementById("who");
 function paintWho(){
   whoBtn.textContent = (st.grp && st.nick) ? (st.grp+" · "+st.nick) : "Хто ти?";
-  paintFb();
+  paintFb(); paintLead();
 }
 whoBtn.onclick=()=>openGate();
 
@@ -838,11 +882,158 @@ function paintFb(){
   if(!st.test){ p.hidden=true; t.setAttribute("aria-expanded","false"); }
 }
 
+/* ============ мій Рій ============ */
+/* Для виховника з ключем: хто в Рої і що зробив. «Прибрати» лише ховає —
+   телефон дитини однаково дописав би справи назад, тож рядок лишається.
+   Справжні імена — лише в st.names на цьому пристрої, на сервер не йдуть. */
+
+/* Справи, що прямо закривають пункт проб (docs/proby.md, ✅). */
+const PROBY={d58:"I.Г.16",d40:"III.Г.16",d29:"III.Г.16",d1:"V.Г.16",d17:"V.Г.16",d24:"V.Г.16",d32:"V.Г.16",d37:"V.Г.16",
+  d59:"I.Г.17",d57:"IV.Г.17",d43:"V.Г.17",d14:"I–II.Г.18",d56:"II, IV.Г.18",
+  d12:"I.Г.19",d21:"I.Г.19",d13:"I, IV.Г.19",d60:"II.Г.19",d26:"II.Г.19",d38:"II.Г.19",
+  d5:"III.Г.19",d19:"III.Г.19",d20:"III.Г.19",d22:"III.Г.19",d35:"III.Г.19",d36:"III.Г.19",d51:"III.Г.19",d10:"III.Г.19",d52:"III.Г.19",
+  d7:"IV.Г.19",d39:"IV.Г.19",d42:"IV.Г.19",d8:"IV.Г.19",d27:"V.Г.19",d53:"V.Г.19",
+  d61:"III.Г.20",d6:"III.Г.20",d62:"IV.Г.20",d2:"IV.Г.20"};
+const byId=Object.fromEntries(D.map(d=>[d.id,d]));
+let lead=null, nvOpen=null, sure="";
+
+function leadApi(path, body){
+  return api("/lead"+path,{ method:"POST", body:Object.assign({ key:st.lead }, body) });
+}
+function paintLead(){
+  const t=document.getElementById("tLead"), p=document.getElementById("pLead");
+  t.hidden=!st.lead;
+  if(!st.lead){ p.hidden=true; t.setAttribute("aria-expanded","false"); }
+}
+function openLeadPanel(){
+  const t=document.getElementById("tLead"), p=document.getElementById("pLead");
+  p.hidden=false; t.setAttribute("aria-expanded","true");
+  p.scrollIntoView({behavior:"smooth",block:"nearest"});
+}
+async function loadLead(){
+  if(!st.lead) return;
+  try{
+    lead=await leadApi("");
+    if(st.test!==!!lead.roi.test){ st.test=!!lead.roi.test; save(); paintWho(); render(); }
+  }catch(e){
+    lead=null;
+    document.getElementById("leadHint").textContent = e.status===404
+      ? "Цей ключ більше не діє. Увійди знову через «Хто ти?»."
+      : "Не вдалося з'єднатися з сервером. Спробуй пізніше.";
+    document.getElementById("leadList").innerHTML="";
+    return;
+  }
+  drawLead();
+}
+async function leadDo(path, body){
+  try{ await leadApi(path, body); }
+  catch(e){ document.getElementById("leadHint").textContent="Не вдалося: "+e.message+"."; return; }
+  sure=""; await loadLead(); sync();
+}
+function el(tag, cls, text){
+  const e=document.createElement(tag);
+  if(cls) e.className=cls;
+  if(text!=null) e.textContent=text;
+  return e;
+}
+/* Дія, що потребує другого натиску замість confirm(). */
+function twoStep(label, again, key, fn){
+  const b=el("button", sure===key?"warn":"", sure===key?again:label);
+  b.onclick=()=>{ if(sure===key) fn(); else { sure=key; drawLead(); } };
+  return b;
+}
+function drawLead(){
+  if(!lead) return;
+  const r=lead.roi;
+  document.getElementById("leadTitle").textContent="Мій Рій «"+r.name+"»";
+  const h=document.getElementById("leadHead"); h.innerHTML="";
+  const c=el("span",null,"Код для новаків: "); c.appendChild(el("b",null,r.code));
+  const k=el("span",null,"Твій ключ: "); k.appendChild(el("b",null,st.lead));
+  h.append(c,k);
+  if(r.test){
+    const t=el("span",null,"Рій тестовий, у таблі його немає. ");
+    const b=twoStep("Зробити справжнім","Так, у табло!","real",()=>leadDo("/real",{}));
+    b.classList.add("leadbtn"); t.appendChild(b); h.appendChild(t);
+  }
+
+  const shown=lead.novaks.filter(n=>!n.hidden).sort((a,b)=>b.codes.length-a.codes.length||a.nick.localeCompare(b.nick,"uk"));
+  const gone=lead.novaks.filter(n=>n.hidden);
+  document.getElementById("leadHint").textContent = shown.length
+    ? "Натисни на новака, щоб побачити його справи й пункти проб, які вони закривають."
+    : "Новаків поки немає. Новак з'являється тут після першої зробленої справи.";
+
+  const list=document.getElementById("leadList"); list.innerHTML="";
+  shown.forEach(n=>list.appendChild(nvRow(n, shown)));
+
+  const gh=document.getElementById("leadHiddenHead"), gl=document.getElementById("leadHidden");
+  gl.innerHTML=""; gh.hidden=!gone.length;
+  gh.textContent="Прибрані ("+gone.length+") — у табло не рахуються:";
+  gone.forEach(n=>{
+    const r=el("div","nv");
+    const b=el("button");
+    b.appendChild(el("span","who",n.nick+(n.merged_into?" → злито в «"+n.merged_into+"»":"")));
+    const back=el("button",null,"Повернути");
+    back.onclick=e=>{ e.stopPropagation(); leadDo("/hide",{ id:n.id, hidden:false }); };
+    const a=el("div","acts"); a.appendChild(back);
+    r.append(b,a); gl.appendChild(r);
+  });
+}
+function nvRow(n, shown){
+  const r=el("div","nv");
+  const b=el("button");
+  b.setAttribute("aria-expanded",String(nvOpen===n.id));
+  const w=el("span","who",n.nick);
+  const real=(st.names||{})[n.id];
+  if(real){ w.append(" "); w.appendChild(el("span","real",real)); }
+  b.append(w, el("span","cnt",n.codes.length));
+  b.onclick=()=>{ nvOpen = nvOpen===n.id ? null : n.id; sure=""; drawLead(); };
+  r.appendChild(b);
+  if(nvOpen!==n.id) return r;
+
+  const body=el("div","nvbody");
+  const deeds=n.codes.map(c=>byId[c]).filter(Boolean);
+  if(deeds.length){
+    const ch=el("div","chips");
+    deeds.forEach(d=>{
+      const c=el("span","chip",d.e+" "+d.t);
+      if(PROBY[d.id]){ c.append(" "); c.appendChild(el("i",null,PROBY[d.id])); }
+      ch.appendChild(c);
+    });
+    body.appendChild(ch);
+  }else body.appendChild(el("span",null,"Справ поки немає."));
+
+  const lab=el("label",null,"Справжнє ім'я — бачиш лише ти, лише на цьому пристрої");
+  const inp=el("input"); inp.maxLength=40; inp.value=real||""; inp.placeholder="напр. Остап К.";
+  inp.onchange=()=>{ st.names=st.names||{}; const v=inp.value.trim(); if(v) st.names[n.id]=v; else delete st.names[n.id]; save(); drawLead(); };
+  lab.appendChild(inp); body.appendChild(lab);
+
+  const a=el("div","acts");
+  a.appendChild(twoStep("Прибрати","Так, прибрати","hide"+n.id,()=>leadDo("/hide",{ id:n.id, hidden:true })));
+  const others=shown.filter(o=>o.id!==n.id);
+  if(others.length){
+    const sel=el("select");
+    sel.appendChild(el("option",null,"Злити в…")).value="";
+    others.forEach(o=>{ const op=el("option",null,o.nick); op.value=o.id; sel.appendChild(op); });
+    sel.onchange=()=>{ sure=""; };
+    const go=el("button",null,"Злити");
+    go.onclick=()=>{
+      if(!sel.value) return;
+      if(sure!=="merge"+n.id+":"+sel.value){ sure="merge"+n.id+":"+sel.value; go.textContent="Так, злити"; go.className="warn"; return; }
+      leadDo("/merge",{ from:n.id, into:Number(sel.value) });
+    };
+    a.append(sel,go);
+  }
+  body.appendChild(a);
+  body.appendChild(el("span","real","Злити — коли один новак записався двічі під різними прізвиськами. Справи об'єднаються, а старе прізвисько далі писатиме в нове."));
+  r.appendChild(body);
+  return r;
+}
+
 /* ============ екран входу ============ */
 const gate=document.getElementById("gate");
 const gErr=document.getElementById("gErr");
 function gShow(which){
-  ["gJoin","gNew","gDone"].forEach(id=>{ document.getElementById(id).hidden = (id!==which); });
+  ["gJoin","gNew","gDone","gLead"].forEach(id=>{ document.getElementById(id).hidden = (id!==which); });
   gErr.hidden=true;
 }
 function gFail(msg){ gErr.textContent=msg; gErr.hidden=false; }
@@ -869,6 +1060,26 @@ gate.addEventListener("click",e=>{ if(e.target===gate) closeGate(); });
 document.addEventListener("keydown",e=>{ if(e.key==="Escape") closeGate(); });
 document.getElementById("gToNew").onclick=()=>gShow("gNew");
 document.getElementById("gToJoin").onclick=()=>gShow("gJoin");
+document.getElementById("gToLead").onclick=()=>{ gShow("gLead"); document.getElementById("gLNick").value=st.nick||""; };
+document.getElementById("gLeadBack").onclick=()=>gShow("gJoin");
+
+document.getElementById("gLeadGo").onclick=async function(){
+  const btn=this;
+  const key=document.getElementById("gKey").value.trim().toUpperCase();
+  const nick=document.getElementById("gLNick").value.trim().slice(0,24);
+  if(!key||!nick) return gFail("Потрібні ключ і твоє прізвисько.");
+  busy(btn,true);
+  try{
+    const d=await leadApi("",{key:key});
+    st.lead=key; st.grp=d.roi.name; st.code=d.roi.code; st.test=!!d.roi.test; st.nick=nick; save();
+    gate.hidden=true; paintWho(); render();
+    await boot();
+    lead=d; drawLead(); openLeadPanel();
+  }catch(e){
+    gFail(e.status===404 ? "Такого ключа немає. Перевір літери." : "Не вдалося з'єднатися. Спробуй ще раз.");
+  }
+  busy(btn,false,"Увійти");
+};
 
 document.getElementById("gJoinGo").onclick=async function(){
   const btn=this;
@@ -879,6 +1090,7 @@ document.getElementById("gJoinGo").onclick=async function(){
   try{
     const roi=await findRoi(code);
     if(!roi){ busy(btn,false,"Приєднатися"); return gFail("Такого коду немає. Перепитай у виховника."); }
+    if(st.code!==roi.code) st.lead="";
     st.grp=roi.name; st.code=roi.code; st.nick=nick; st.test=!!roi.test; save();
     gate.hidden=true; paintWho(); render();
     await sync(); await boot();
@@ -897,8 +1109,9 @@ document.getElementById("gNewGo").onclick=async function(){
   busy(btn,true);
   try{
     const roi=await createRoi(name,test);
-    st.grp=roi.name; st.code=roi.code; st.nick=nick; st.test=!!test; save();
+    st.grp=roi.name; st.code=roi.code; st.nick=nick; st.test=!!test; st.lead=roi.lead_key; save();
     document.getElementById("gCodeOut").textContent=roi.code;
+    document.getElementById("gKeyOut").textContent=roi.lead_key;
     gShow("gDone"); paintWho();
     await sync();
   }catch(e){
