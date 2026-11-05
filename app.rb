@@ -144,6 +144,13 @@ class Ekokolo < Sinatra::Base
     fail!(422, "потрібне прізвисько") if nick.empty?
     list = deed_list(payload["codes"])
 
+    # Порожній запис рядка не створює: інакше виховник, що щойно
+    # завів Рій, і дитина без жодної справи рахувалися б новаками.
+    if list.empty?
+      row = DB[:novak].where(roi_id: roi[:id], nick_key: nick_key(nick)).first
+      return json(done: row ? row[:codes].to_a : [])
+    end
+
     row = DB.fetch(<<~SQL, roi[:id], nick, nick_key(nick), JSON.generate(list)).first
       insert into novak (roi_id, nick, nick_key, codes)
       values (?, ?, ?, ?::jsonb)
