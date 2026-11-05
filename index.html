@@ -285,7 +285,7 @@ button{font:inherit;color:inherit;cursor:pointer}
         <input id="gCode" placeholder="Код Рою" maxlength="8" autocomplete="off" autocapitalize="characters" spellcheck="false">
         <input id="gNick" placeholder="Твоє прізвисько" maxlength="24" autocomplete="off">
       </div>
-      <div class="row2"><button id="gJoinGo" class="prim">Приєднатися</button></div>
+      <div class="row2"><button id="gLater">Пізніше</button><button id="gJoinGo" class="prim">Приєднатися</button></div>
       <p class="mini"><button class="linky" id="gToNew">Я виховник — створити Рій</button></p>
     </div>
 
@@ -753,6 +753,17 @@ function openGate(){
   gate.hidden=false;
   setTimeout(()=>document.getElementById("gCode").focus(),60);
 }
+/* Закрити можна завжди: без коду гра працює, поступ лишається на пристрої.
+   Якщо Рій щойно створено — закриття те саме, що «Починаємо». */
+function closeGate(){
+  if(gate.hidden) return;
+  const created=!document.getElementById("gDone").hidden;
+  gate.hidden=true;
+  if(created){ render(); boot(); }
+}
+document.getElementById("gLater").onclick=closeGate;
+gate.addEventListener("click",e=>{ if(e.target===gate) closeGate(); });
+document.addEventListener("keydown",e=>{ if(e.key==="Escape") closeGate(); });
 document.getElementById("gToNew").onclick=()=>gShow("gNew");
 document.getElementById("gToJoin").onclick=()=>gShow("gJoin");
 
