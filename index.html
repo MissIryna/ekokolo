@@ -189,6 +189,9 @@ button{font:inherit;color:inherit;cursor:pointer}
 .nvbody label{display:flex;flex-direction:column;gap:4px;color:var(--muted);font-size:13px}
 .nvbody input,.nvbody select{font:inherit;font-size:14px;padding:8px 10px;background:var(--page);color:var(--ink);border:2px solid var(--line);border-radius:11px}
 .acts{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.aftertest{flex-basis:100%;border:2px dashed var(--line);border-radius:14px;padding:10px 12px;color:var(--muted);font-size:13.5px}
+.aftertest p{margin:0 0 7px}
+.aftertest p:first-child{color:var(--ink);font-weight:600}
 .acts button,.leadbtn{border:2px solid var(--line);background:transparent;border-radius:11px;padding:7px 12px;font-weight:600;font-size:13.5px}
 .acts button.warn,.leadbtn.warn{border-color:var(--accent2);color:var(--accent2)}
 .credit{margin-top:46px;padding-top:22px;border-top:2px solid var(--line);
@@ -953,7 +956,10 @@ function drawLead(){
   const k=el("span",null,"Твій ключ: "); k.appendChild(el("b",null,st.lead));
   h.append(c,k);
   if(r.test){
-    const t=el("span",null,"Рій тестовий, у таблі його немає. ");
+    const t=el("div","aftertest");
+    t.appendChild(el("p",null,"Рій тестовий, у таблі його немає."));
+    t.appendChild(el("p",null,"Цей Рій буде справжнім? Спершу приберіть усіх, хто грав лише для перевірки: себе, якщо позначали справи, і пробних новаків. Інакше їхні справи потраплять у табло. Код для новаків лишиться той самий, кнопки відгуків зникнуть. Назад у тестовий самостійно не перемкнути."));
+    t.appendChild(el("p",null,"Рій був лише для перевірки? Нічого не робіть. Для дітей створіть новий Рій без галочки «Тестовий Рій». Відгуки збережуться в будь-якому разі."));
     const b=twoStep("Зробити справжнім","Так, у табло!","real",()=>leadDo("/real",{}));
     b.classList.add("leadbtn"); t.appendChild(b); h.appendChild(t);
   }
