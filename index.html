@@ -94,9 +94,8 @@ button{font:inherit;color:inherit;cursor:pointer}
 .cat{padding:3px 9px;border-radius:999px;background:color-mix(in srgb,var(--accent2) 15%,transparent);color:var(--accent2)}
 .leaves{margin-left:auto;letter-spacing:1px;font-size:12px}
 .ptag{font-weight:600;white-space:nowrap}
-.ptag.mine{color:var(--accent);font-weight:800}
-.gproba{margin:14px 0 0}
-.gproba p{margin:0 0 8px;font-size:14px;color:var(--muted)}
+.gage{margin:14px 0 0}
+.gage p{margin:0 0 8px;font-size:14px;color:var(--muted)}
 .pchips{display:flex;gap:6px}
 .pchips button{flex:1;min-width:0;padding:9px 0;border-radius:12px;border:2px solid var(--line);background:transparent;color:var(--ink);font-weight:700;font-size:14px}
 .pchips button[aria-pressed="true"]{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 16%,transparent)}
@@ -254,7 +253,7 @@ button{font:inherit;color:inherit;cursor:pointer}
     <p class="mini">Листочки показують, яка справа велика. Один листочок — упораєшся сам за кілька хвилин. Три — треба цілий Рій або хтось дорослий поруч.</p>
     <p class="mini">Справи поділені на два блоки. «Можу сам» роби, коли захочеш. «Роєм або з дорослими» плануйте разом на сходинах.</p>
     <p class="mini">Порядок будь-який, і зробити все одразу неможливо — гра розрахована на цілий рік. Твої наліпки збираються в «Моїх наліпках», а поступ усього Рою видно в «Таблі Роїв».</p>
-    <p class="mini">У «Хто ти?» обери свою пробу. Біля справи видно, який пункт проби вона закриває, а для старших деякі справи стають складнішими.</p>
+    <p class="mini">У «Хто ти?» скажи, скільки тобі років. Для старших деякі справи стають складнішими.</p>
     <p class="mini"><b>Одне важливе.</b> Наліпка без справи — обман самого себе. Пластун так не робить.</p>
     <p class="mini">Виховникам: гра закриває більшість пунктів підрозділу «довкілля» новацьких проб, а також А.4 про добрі справи. Ройові справи варто розписати на рік наперед, ще на початку осені.</p>
   </section>
@@ -288,7 +287,7 @@ button{font:inherit;color:inherit;cursor:pointer}
         <li>Чи безпечно? Чи правильно вказано, де потрібен дорослий або Рій?</li>
         <li>Чи відповідають складність (1–3 листочки) та пора року?</li>
       </ul>
-      <p>Під справою видно пункт проби, який вона закриває. Деякі справи мають складніший варіант для IV–V проби: оберіть пробу в «Хто ти?» й подивіться обидва.</p>
+      <p>Біля справи видно пункт проби, який вона закриває. Його бачать лише виховник і тестовий Рій, новаки — ні. Деякі справи мають складніший варіант для 10–11 років: змініть вік у «Хто ти?» й подивіться обидва.</p>
       <p>Натисніть «Зроблено!» і зітріть поле з фактом: чи цікавий він і чи правдивий? «Ще не зроблено» повертає справу назад.</p>
       <h4>Як залишити відгук</h4>
       <p>У тестовому Рої під кожною справою є «Для виховника»: 👍 підходить, 🤔 заскладно (для 8–11 років надто складно чи довго), ✏️ переписати (ідея добра, але текст чи факт треба змінити). Один дотик — і оцінка надіслана.</p>
@@ -380,9 +379,9 @@ button{font:inherit;color:inherit;cursor:pointer}
         <input id="gCode" placeholder="Код Рою" maxlength="8" autocomplete="off" autocapitalize="characters" spellcheck="false">
         <input id="gNick" placeholder="Твоє прізвисько" maxlength="24" autocomplete="off">
       </div>
-      <div class="gproba">
-        <p>Яку пробу ти здобуваєш? Старшим проба дає складніші завдання.</p>
-        <div class="pchips" id="gProba" role="group" aria-label="Проба"></div>
+      <div class="gage">
+        <p>Скільки тобі років? Старшим — складніші завдання.</p>
+        <div class="pchips" id="gAge" role="group" aria-label="Вік"></div>
       </div>
       <div class="row2"><button id="gLater">Пізніше</button><button id="gJoinGo" class="prim">Приєднатися</button></div>
       <p class="mini"><button class="linky" id="gToNew">Я виховник — створити Рій</button></p>
@@ -530,7 +529,7 @@ const ARC={autumn:[4,86],winter:[94,176],spring:[184,266],summer:[274,356]};
 
 /* ============ стан ============ */
 const KEY="ekolo.v1";
-let st={nick:"",grp:"",code:"",done:{},test:false,fb:{},lead:"",names:{},proba:0};
+let st={nick:"",grp:"",code:"",done:{},test:false,fb:{},lead:"",names:{},band:""};
 let cur="autumn";
 
 function load(){ try{ const r=localStorage.getItem(KEY); if(r) st=Object.assign(st,JSON.parse(r)); }catch(e){} }
@@ -612,9 +611,8 @@ function card(d){
   const lv=document.createElement("span"); lv.className="leaves";
   lv.textContent="🍃".repeat(d.lv); lv.title="Складність: "+d.lv+" з 3";
   m.append(cat);
-  if(PROBY[d.id]){
-    const t=document.createElement("span");
-    t.className="ptag"+(probaLevels(PROBY[d.id]).includes(st.proba)?" mine":"");
+  if(PROBY[d.id]&&(st.lead||st.test)){
+    const t=document.createElement("span"); t.className="ptag";
     t.textContent=PROBY[d.id]; t.title="Пункт новацьких проб";
     m.appendChild(t);
   }
@@ -635,17 +633,12 @@ function card(d){
   if(st.test) c.appendChild(fbBox(d));
   return c;
 }
-/* Проба — лише на цьому пристрої, на сервер не йде. Старшим (IV–V)
-   показуємо d.o, якщо справа його має; решта бачить d.d. */
-const ROMAN=["","I","II","III","IV","V"];
-const deedText=d=>(st.proba>=4&&d.o)?d.o:d.d;
-function probaLevels(tag){
-  return tag.split(".")[0].split(",").flatMap(part=>{
-    const [a,b]=part.trim().split("–").map(r=>ROMAN.indexOf(r));
-    if(!(b>0)) return [a];
-    const out=[]; for(let i=a;i<=b;i++) out.push(i); return out;
-  });
-}
+/* Вік — лише на цьому пристрої, на сервер не йде. Новаки не думають
+   пробами, тож питаємо роки, і лише двома проміжками — бо й текстів
+   у справи два. 10–11 (IV–V проба) бачать d.o, якщо справа його має;
+   решта — d.d. Пункт проби бачать лише дорослі. */
+const BANDS=[["young","7–9 років"],["old","10–11 років"]];
+const deedText=d=>(st.band==="old"&&d.o)?d.o:d.d;
 function head(title,note){
   const w=document.createElement("div"); w.className="ghead";
   const h=document.createElement("h3"); h.textContent=title;
@@ -1114,17 +1107,17 @@ function gFail(msg){ gErr.textContent=msg; gErr.hidden=false; }
 function busy(btn,on,label){
   btn.disabled=on; btn.textContent = on ? "Хвилинку…" : label;
 }
-function paintProba(){
-  const w=document.getElementById("gProba"); w.innerHTML="";
-  for(let i=1;i<=5;i++){
-    const b=document.createElement("button"); b.type="button"; b.textContent=ROMAN[i];
-    b.setAttribute("aria-pressed",String(st.proba===i));
-    b.onclick=()=>{ st.proba = st.proba===i ? 0 : i; save(); paintProba(); render(); };
+function paintAge(){
+  const w=document.getElementById("gAge"); w.innerHTML="";
+  BANDS.forEach(([v,label])=>{
+    const b=document.createElement("button"); b.type="button"; b.textContent=label;
+    b.setAttribute("aria-pressed",String(st.band===v));
+    b.onclick=()=>{ st.band = st.band===v ? "" : v; save(); paintAge(); render(); };
     w.appendChild(b);
-  }
+  });
 }
 function openGate(){
-  paintProba();
+  paintAge();
   document.getElementById("gCode").value=st.code||"";
   document.getElementById("gNick").value=st.nick||"";
   gShow("gJoin");
