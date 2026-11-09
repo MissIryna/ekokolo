@@ -142,6 +142,7 @@ button{font:inherit;color:inherit;cursor:pointer}
 .prize .em{font-size:60px;line-height:1}
 .prize .fact{font-size:14.5px;color:var(--muted);max-width:32ch}
 #scratch{position:absolute;inset:0;width:100%;height:100%;touch-action:none;cursor:grab}
+.sheet .mini{color:var(--muted);font-size:13.5px;margin:10px 0 0}
 .sheet .row2{display:flex;gap:9px;margin-top:15px}
 .sheet .row2 button{flex:1;border-radius:14px;padding:11px;font-weight:700;font-size:14.5px;border:2px solid var(--line);background:transparent}
 .sheet .row2 .prim{background:var(--accent);color:#fff;border-color:var(--accent)}
@@ -151,8 +152,9 @@ button{font:inherit;color:inherit;cursor:pointer}
   overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .linky{background:none;border:none;padding:0;font-size:14px;font-weight:600;
   color:var(--accent);text-decoration:underline;text-underline-offset:3px}
-.gcheck{display:flex;align-items:center;gap:8px;font-size:13.5px;color:var(--muted);margin-top:2px}
-.gcheck input{width:18px;height:18px;flex:none}
+.gcheck{display:flex;align-items:flex-start;gap:9px;font-size:13.5px;line-height:1.4;color:var(--muted);margin-top:2px;text-align:left}
+/* .gfields input розтягує поля на всю ширину — галочку повертаємо до розміру */
+.gfields .gcheck input{width:18px;height:18px;padding:0;margin:1px 0 0;flex:none}
 .gkey{font-size:26px!important;letter-spacing:.1em!important;color:var(--accent2)!important}
 .gcode{font-family:Unbounded,sans-serif;font-weight:800;font-size:38px;letter-spacing:.14em;
   margin:14px 0;color:var(--accent)}
@@ -352,7 +354,7 @@ button{font:inherit;color:inherit;cursor:pointer}
       <div class="gfields">
         <input id="gName" placeholder="Назва Рою" maxlength="24" autocomplete="off">
         <input id="gVNick" placeholder="Твоє прізвисько" maxlength="24" autocomplete="off">
-        <label class="gcheck"><input type="checkbox" id="gTest"> тестовий Рій: не в таблі, з відгуками до справ</label>
+        <label class="gcheck"><input type="checkbox" id="gTest"><span><b>Тестовий Рій</b> — не потрапляє в табло, під справами можна лишати відгуки</span></label>
       </div>
       <div class="row2"><button id="gNewGo" class="prim">Створити Рій</button></div>
       <p class="mini"><button class="linky" id="gToJoin">← Я новак, у мене є код</button></p>
