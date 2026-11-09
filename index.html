@@ -94,6 +94,10 @@ button{font:inherit;color:inherit;cursor:pointer}
 .cat{padding:3px 9px;border-radius:999px;background:color-mix(in srgb,var(--accent2) 15%,transparent);color:var(--accent2)}
 .leaves{margin-left:auto;letter-spacing:1px;font-size:12px}
 .ptag{font-weight:600;white-space:nowrap}
+.upd{color:var(--accent);font-weight:800;white-space:nowrap}
+.news{display:flex;gap:10px;align-items:flex-start;margin:0 0 16px;padding:12px 14px;border-radius:16px;border:2px solid var(--accent);background:color-mix(in srgb,var(--accent) 10%,var(--card));font-size:14.5px}
+.news span{flex:1}
+.news button{flex:none;border:none;background:none;color:var(--muted);font-size:20px;line-height:1;padding:0 2px}
 .gage{margin:14px 0 0}
 .gage p{margin:0 0 8px;font-size:14px;color:var(--muted)}
 .pchips{display:flex;gap:6px}
@@ -313,6 +317,7 @@ button{font:inherit;color:inherit;cursor:pointer}
     <div id="leadHidden"></div>
   </section>
 
+  <p class="news" id="news" hidden><span id="newsText"></span><button id="newsX" aria-label="Закрити">×</button></p>
   <div class="grid" id="grid"></div>
 
   <footer class="credit">
@@ -529,7 +534,7 @@ const ARC={autumn:[4,86],winter:[94,176],spring:[184,266],summer:[274,356]};
 
 /* ============ стан ============ */
 const KEY="ekolo.v1";
-let st={nick:"",grp:"",code:"",done:{},test:false,fb:{},lead:"",names:{},band:""};
+let st={nick:"",grp:"",code:"",done:{},test:false,fb:{},lead:"",names:{},band:"",seen:""};
 let cur="autumn";
 
 function load(){ try{ const r=localStorage.getItem(KEY); if(r) st=Object.assign(st,JSON.parse(r)); }catch(e){} }
@@ -590,7 +595,7 @@ function pick(s){ cur=s; document.body.dataset.season=s; render(); }
 function render(){
   document.getElementById("sname").textContent=SEASONS[cur].n+" · "+seasonDone(cur)+" з "+seasonAll(cur);
   document.getElementById("sline").textContent=SEASONS[cur].l;
-  paintWheel(); renderBadges(); renderGrid(); renderAlbum();
+  paintWheel(); renderBadges(); renderGrid(); renderAlbum(); paintNews();
 }
 function renderBadges(){
   const b=document.getElementById("badges"); b.innerHTML="";
@@ -616,6 +621,10 @@ function card(d){
     t.textContent=PROBY[d.id]; t.title="Пункт новацьких проб";
     m.appendChild(t);
   }
+  if(st.test&&NEWS.deeds.includes(d.id)){
+    const u=document.createElement("span"); u.className="upd"; u.textContent="оновлено";
+    m.appendChild(u);
+  }
   m.appendChild(lv);
   const h=document.createElement("h3"); h.textContent=d.t;
   const p=document.createElement("p"); p.textContent=deedText(d);
@@ -639,6 +648,16 @@ function card(d){
    решта — d.d. Пункт проби бачать лише дорослі. */
 const BANDS=[["young","7–9 років"],["old","10–11 років"]];
 const deedText=d=>(st.band==="old"&&d.o)?d.o:d.d;
+/* Що змінили за відгуками — бачить лише тестовий Рій. Нова хвиля
+   правок: нове id, новий текст і список справ. */
+const NEWS={id:"2026-11-09",deeds:["d1","d3","d4","d9","d14","d16","d46","d63"],
+  text:"Дякуємо за відгуки! За ними ми переписали 7 справ і додали весняну «Посій своє насіння». Вони позначені «оновлено» — гляньте, чи стало зрозуміліше."};
+function paintNews(){
+  const n=document.getElementById("news");
+  n.hidden=!(st.test&&st.seen!==NEWS.id);
+  document.getElementById("newsText").textContent=NEWS.text;
+}
+document.getElementById("newsX").onclick=()=>{ st.seen=NEWS.id; save(); paintNews(); };
 function head(title,note){
   const w=document.createElement("div"); w.className="ghead";
   const h=document.createElement("h3"); h.textContent=title;
