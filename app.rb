@@ -141,10 +141,13 @@ class Ekokolo < Sinatra::Base
     fail!(503, "не вдалося підібрати вільний код")
   end
 
-  # Новак перевіряє код, який дав виховник.
+  # Новак перевіряє код, який дав виховник. Заодно — справа тижня й
+  # скільки справ Рій зібрав разом (для дерева Рою).
   get "/api/roi/:code" do
     row = roi_by_code!(params[:code])
-    json(id: row[:id], name: row[:name], code: row[:code], test: row[:test])
+    sum = DB[:novak].where(roi_id: row[:id], hidden: false).sum(:cnt).to_i
+    json(id: row[:id], name: row[:name], code: row[:code], test: row[:test],
+         pick: row[:pick], sum: sum)
   end
 
   # ──────────────── поступ ────────────────
@@ -210,7 +213,7 @@ class Ekokolo < Sinatra::Base
     novaks = DB[:novak].where(roi_id: roi[:id]).order(:nick_key).all
     names  = novaks.to_h { |n| [n[:id], n[:nick]] }
     json(
-      roi:    { name: roi[:name], code: roi[:code], test: roi[:test] },
+      roi:    { name: roi[:name], code: roi[:code], test: roi[:test], pick: roi[:pick] },
       novaks: novaks.map do |n|
         { id: n[:id], nick: n[:nick], codes: n[:codes].to_a, hidden: n[:hidden],
           merged_into: names[n[:alias_of]], updated_at: n[:updated_at].iso8601 }
@@ -250,6 +253,15 @@ class Ekokolo < Sinatra::Base
       DB[:novak].where(alias_of: from[:id]).update(alias_of: into[:id])
       DB[:novak].where(id: from[:id]).update(hidden: true, alias_of: into[:id])
     end
+    json(ok: true)
+  end
+
+  # Справа тижня. deed: null — зняти.
+  post "/api/lead/pick" do
+    roi  = roi_by_key!(payload["key"])
+    deed = payload["deed"]&.to_s
+    fail!(422, "невідома справа") if deed && !deed.match?(DEED_RE)
+    DB[:roi].where(id: roi[:id]).update(pick: deed)
     json(ok: true)
   end
 

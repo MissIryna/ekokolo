@@ -69,6 +69,9 @@ create table if not exists vidguk (
   unique (roi_id, nick_key, deed)
 );
 
+-- Справа тижня: виховник обирає одну справу, вона висить у новаків зверху.
+alter table roi add column if not exists pick text check (pick ~ '^d[0-9]{1,3}$');
+
 -- ──────────────── табло ────────────────
 -- Тестові Рої не показуються, приховані й злиті новаки не рахуються.
 

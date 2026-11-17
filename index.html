@@ -97,6 +97,16 @@ button{font:inherit;color:inherit;cursor:pointer}
 .upd{color:var(--accent);font-weight:800;white-space:nowrap}
 .news{display:flex;gap:10px;align-items:flex-start;margin:0 0 16px;padding:12px 14px;border-radius:16px;border:2px solid var(--accent);background:color-mix(in srgb,var(--accent) 10%,var(--card));font-size:14.5px}
 .news span{flex:1}
+.news[hidden],.tree[hidden]{display:none}
+.tree{display:flex;gap:14px;align-items:center;margin:0 0 18px;padding:12px 16px 12px 10px;border-radius:20px;border:2px solid var(--line);background:var(--card)}
+.tree svg{flex:none;width:112px;height:112px}
+.tree h3{margin:0 0 4px;font-family:Unbounded;font-size:15px;line-height:1.3}
+.tree p{margin:0;font-size:14px;color:var(--muted)}
+.tree b{color:var(--ink)}
+.deed.pick{border-color:var(--accent2)}
+.pickrow{margin:14px 0 4px}
+.pickrow label{display:block;font-weight:700;font-size:14px;margin:0 0 6px}
+.pickrow select{width:100%;padding:10px 12px;border-radius:12px;border:2px solid var(--line);background:var(--card);color:var(--ink);font:inherit;font-size:15px}
 .news button{flex:none;border:none;background:none;color:var(--muted);font-size:20px;line-height:1;padding:0 2px}
 .gage{margin:14px 0 0}
 .gage p{margin:0 0 8px;font-size:14px;color:var(--muted)}
@@ -305,7 +315,8 @@ button{font:inherit;color:inherit;cursor:pointer}
       <h4>Щоб гра жила цілий рік</h4>
       <p>Сама гра не житиме — її тримає виховник. Що допомагає:</p>
       <ul>
-        <li>5 хвилин на кожних сходинах: хто що зробив, розкажіть і погляньте на табло.</li>
+        <li>Щотижня обирайте в «Моєму Рої» «Справу тижня» — у новаків вона висить зверху. На сходинах питайте, хто вже зробив.</li>
+        <li>5 хвилин на кожних сходинах: хто що зробив, як підросло дерево Рою, що на табло.</li>
         <li>Ройові справи («Роєм або з дорослими») — одразу в план року, ще восени.</li>
         <li>Вплетіть гру в легенду Рою: наліпки як знаки, пори року як етапи мандрівки.</li>
         <li>Хваліть за справу, а не за кількість наліпок.</li>
@@ -326,6 +337,10 @@ button{font:inherit;color:inherit;cursor:pointer}
   </section>
 
   <p class="news" id="news" hidden><span id="newsText"></span><button id="newsX" aria-label="Закрити">×</button></p>
+  <section class="tree" id="tree" hidden aria-live="polite">
+    <svg id="treeSvg" viewBox="0 0 120 120" role="img" aria-labelledby="treeTitle"></svg>
+    <div><h3 id="treeTitle">Дерево Рою</h3><p id="treeText"></p></div>
+  </section>
   <div class="grid" id="grid"></div>
 
   <footer class="credit">
@@ -542,7 +557,7 @@ const ARC={autumn:[4,86],winter:[94,176],spring:[184,266],summer:[274,356]};
 
 /* ============ стан ============ */
 const KEY="ekolo.v1";
-let st={nick:"",grp:"",code:"",done:{},test:false,fb:{},lead:"",names:{},band:"",seen:""};
+let st={nick:"",grp:"",code:"",done:{},test:false,fb:{},lead:"",names:{},band:"",seen:"",pick:"",rsum:0};
 let cur="autumn";
 
 function load(){ try{ const r=localStorage.getItem(KEY); if(r) st=Object.assign(st,JSON.parse(r)); }catch(e){} }
@@ -603,7 +618,7 @@ function pick(s){ cur=s; document.body.dataset.season=s; render(); }
 function render(){
   document.getElementById("sname").textContent=SEASONS[cur].n+" · "+seasonDone(cur)+" з "+seasonAll(cur);
   document.getElementById("sline").textContent=SEASONS[cur].l;
-  paintWheel(); renderBadges(); renderGrid(); renderAlbum(); paintNews();
+  paintWheel(); renderBadges(); renderGrid(); renderAlbum(); paintNews(); drawTree();
 }
 function renderBadges(){
   const b=document.getElementById("badges"); b.innerHTML="";
@@ -663,14 +678,45 @@ const BANDS=[["young","7–9 років"],["old","10–11 років"]];
 const deedText=d=>(st.band==="old"&&d.o)?d.o:d.d;
 /* Що змінили за відгуками — бачить лише тестовий Рій. Нова хвиля
    правок: нове id, новий текст і список справ. */
-const NEWS={id:"2026-11-16",deeds:["d2","d10","d18","d22","d26","d38","d39","d41","d43","d44","d45","d47","d50"],
-  text:"Дякуємо за відгуки! За ними ми переписали ще 13 справ — вони позначені «оновлено». А 10 справ мають складніший варіант для 10–11 років (позначка «є для 10–11»): оберіть вік у «Хто ти?», щоб його побачити."};
+const NEWS={id:"2026-11-17",deeds:["d2","d10","d18","d22","d26","d38","d39","d41","d43","d44","d45","d47","d50"],
+  text:"Нове: дерево Рою над справами і «Справа тижня» — виховник обирає її в «Моєму Рої». А ще за вашими відгуками ми переписали 13 справ — вони позначені «оновлено». А 10 справ мають складніший варіант для 10–11 років (позначка «є для 10–11»): оберіть вік у «Хто ти?», щоб його побачити."};
 function paintNews(){
   const n=document.getElementById("news");
   n.hidden=!(st.test&&st.seen!==NEWS.id);
   document.getElementById("newsText").textContent=NEWS.text;
 }
 document.getElementById("newsX").onclick=()=>{ st.seen=NEWS.id; save(); paintNews(); };
+/* Дерево Рою: кожна справа будь-кого з Рою — листочок. Листки лягають
+   спіраллю від середини крони назовні, тож дерево «густішає». */
+const TREE_MAX=150;
+const LEAF={autumn:["#E0892B","#C8541F","#E8B33A","#A8432A"],
+  winter:["#FFFFFF","#E3EEF6","#CFE2F0"],
+  spring:["#7CC24A","#5C9E33","#9AD46B","#F2A7C3"],
+  summer:["#3E8E3A","#2F7A3A","#5FAE45","#4E9E3E"]};
+function leaves(n){
+  const m=n%100, k=n%10;
+  return n+((m>=11&&m<=14)||k===0||k>=5?" листочків":k===1?" листочок":" листочки");
+}
+function drawTree(){
+  const box=document.getElementById("tree");
+  box.hidden=!st.code;
+  if(!st.code) return;
+  const n=Math.max(st.rsum||0,total());
+  const sv=document.getElementById("treeSvg"); sv.innerHTML="";
+  const mk=(tag,at)=>{ const e=document.createElementNS(NS,tag); for(const k in at) e.setAttribute(k,at[k]); sv.appendChild(e); return e; };
+  mk("path",{d:"M55 116 L57 74 Q46 66 38 58 Q50 62 58 68 L59 54 L62 54 L63 66 Q72 58 82 54 Q74 64 64 72 L66 116 Z",fill:"#7A5233"});
+  mk("ellipse",{cx:60,cy:46,rx:47,ry:39,fill:"none",stroke:"var(--line)","stroke-width":1.5,"stroke-dasharray":"3 4"});
+  const pal=LEAF[cur], shown=Math.min(n,TREE_MAX);
+  for(let i=0;i<shown;i++){
+    const r=Math.sqrt((i+.5)/TREE_MAX), a=i*2.39996;
+    mk("circle",{cx:(60+44*r*Math.cos(a)).toFixed(1),cy:(46+36*r*Math.sin(a)).toFixed(1),r:3.6,
+      fill:pal[(i*7)%pal.length],stroke:cur==="winter"?"rgba(29,53,70,.3)":"none","stroke-width":.6});
+  }
+  document.getElementById("treeTitle").textContent="Дерево Рою «"+st.grp+"»";
+  const t=document.getElementById("treeText"); t.textContent="";
+  const b=document.createElement("b"); b.textContent=leaves(n);
+  t.append(b,". "+(n>=TREE_MAX?"Крона вже повна — ростіть далі!":"Кожна справа будь-кого з Рою — новий листочок."));
+}
 function head(title,note){
   const w=document.createElement("div"); w.className="ghead";
   const h=document.createElement("h3"); h.textContent=title;
@@ -679,7 +725,12 @@ function head(title,note){
 }
 function renderGrid(){
   const g=document.getElementById("grid"); g.innerHTML="";
-  const mine=D.filter(d=>d.s===cur);
+  const pk=st.pick&&byId[st.pick];
+  if(pk){
+    g.appendChild(head("⭐ Справа тижня","обрав виховник"));
+    const c=card(pk); c.classList.add("pick"); g.appendChild(c);
+  }
+  const mine=D.filter(d=>d.s===cur&&d!==pk);
   const solo=mine.filter(d=>!d.tg), tog=mine.filter(d=>d.tg);
   if(solo.length){
     g.appendChild(head("Можу сам","роби, коли захочеш"));
@@ -845,12 +896,18 @@ function saveMine(){
   });
 }
 
+/* Що про Рій каже сервер: тестовий він, справа тижня, скільки справ разом. */
+function applyRoi(roi){
+  if(!roi) return;
+  const changed = st.test!==!!roi.test || st.pick!==(roi.pick||"") || st.rsum!==(roi.sum||0);
+  st.test=!!roi.test; st.pick=roi.pick||""; st.rsum=roi.sum||0;
+  if(changed){ save(); paintWho(); render(); }
+}
 async function boot(){
   paintWho();
   if(!st.code || !st.nick){ offline("Приєднайся до Рою, щоб поступ зберігався."); return; }
   try{
-    const roi = await findRoi(st.code);
-    if(roi && st.test !== !!roi.test){ st.test=!!roi.test; save(); paintWho(); render(); }
+    applyRoi(await findRoi(st.code));
     const mine = await loadMine();
     const had = Object.keys(st.done).length;
     mine.forEach(c=>{ if(!st.done[c]) st.done[c]=1; });
@@ -872,6 +929,7 @@ function sync(){
         d.done.forEach(c=>{ if(!st.done[c]) st.done[c]=1; });
         save();
       }
+      applyRoi(await findRoi(st.code));
       rows = await loadBoard();
       drawBoard(); render();
     }catch(e){
@@ -1054,6 +1112,8 @@ function drawLead(){
     const b=twoStep("Зробити справжнім","Так, у табло!","real",()=>leadDo("/real",{}));
     b.classList.add("leadbtn"); t.appendChild(b); h.appendChild(t);
   }
+  h.appendChild(pickRow(r.pick||""));
+  if(st.pick!==(r.pick||"")){ st.pick=r.pick||""; save(); render(); }
 
   const shown=lead.novaks.filter(n=>!n.hidden).sort((a,b)=>b.codes.length-a.codes.length||a.nick.localeCompare(b.nick,"uk"));
   const gone=lead.novaks.filter(n=>n.hidden);
@@ -1076,6 +1136,20 @@ function drawLead(){
     const a=el("div","acts"); a.appendChild(back);
     r.append(b,a); gl.appendChild(r);
   });
+}
+function pickRow(cur){
+  const w=el("div","pickrow");
+  const l=el("label",null,"⭐ Справа тижня — у новаків висить зверху:"); l.htmlFor="leadPick";
+  const s=el("select"); s.id="leadPick";
+  const none=el("option",null,"— не обрано —"); none.value=""; s.appendChild(none);
+  ORDER.forEach(se=>{
+    const g=el("optgroup"); g.label=SEASONS[se].n;
+    D.filter(d=>d.s===se).forEach(d=>{ const o=el("option",null,d.e+" "+d.t); o.value=d.id; g.appendChild(o); });
+    s.appendChild(g);
+  });
+  s.value=cur;
+  s.onchange=()=>leadDo("/pick",{ deed:s.value||null });
+  w.append(l,s); return w;
 }
 function nvRow(n, shown){
   const r=el("div","nv");
@@ -1180,7 +1254,7 @@ document.getElementById("gLeadGo").onclick=async function(){
   busy(btn,true);
   try{
     const d=await leadApi("",{key:key});
-    st.lead=key; st.grp=d.roi.name; st.code=d.roi.code; st.test=!!d.roi.test; st.nick=nick; save();
+    st.lead=key; st.grp=d.roi.name; st.code=d.roi.code; st.test=!!d.roi.test; st.pick=d.roi.pick||""; st.nick=nick; save();
     gate.hidden=true; paintWho(); render();
     await boot();
     lead=d; drawLead(); openLeadPanel();
@@ -1200,7 +1274,7 @@ document.getElementById("gJoinGo").onclick=async function(){
     const roi=await findRoi(code);
     if(!roi){ busy(btn,false,"Приєднатися"); return gFail("Такого коду немає. Перепитай у виховника."); }
     if(st.code!==roi.code) st.lead="";
-    st.grp=roi.name; st.code=roi.code; st.nick=nick; st.test=!!roi.test; save();
+    st.grp=roi.name; st.code=roi.code; st.nick=nick; st.test=!!roi.test; st.pick=roi.pick||""; st.rsum=roi.sum||0; save();
     gate.hidden=true; paintWho(); render();
     await sync(); await boot();
   }catch(e){
@@ -1218,7 +1292,7 @@ document.getElementById("gNewGo").onclick=async function(){
   busy(btn,true);
   try{
     const roi=await createRoi(name,test);
-    st.grp=roi.name; st.code=roi.code; st.nick=nick; st.test=!!test; st.lead=roi.lead_key; save();
+    st.grp=roi.name; st.code=roi.code; st.nick=nick; st.test=!!test; st.lead=roi.lead_key; st.pick=""; st.rsum=0; save();
     document.getElementById("gCodeOut").textContent=roi.code;
     document.getElementById("gKeyOut").textContent=roi.lead_key;
     gShow("gDone"); paintWho();
